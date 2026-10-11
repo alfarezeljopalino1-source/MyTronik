@@ -1,8 +1,9 @@
 import React from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,10 +15,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0A1128",
+};
+
 export const metadata: Metadata = {
   title: "MyTronik - Paket Langganan Netflix, Spotify, CapCut & Canva Bergaransi",
   description:
     "Pusat langganan paket Netflix 4K UHD, Spotify Premium, CapCut Pro Creator Suite, dan Canva Pro Desain terpercaya untuk pengguna Indonesia. Pengiriman cepat 5-10 menit & garansi penuh.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "MyTronik",
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
   keywords: [
     "paket netflix",
     "paket spotify",
@@ -63,8 +81,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-slate-50 dark:bg-[#0A1128] text-slate-900 dark:text-slate-100 selection:bg-sky-500 selection:text-white transition-colors duration-250">
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="min-h-full flex flex-col bg-slate-50 dark:bg-[#0A1128] text-slate-900 dark:text-slate-100 selection:bg-sky-500 selection:text-white transition-colors duration-250 pb-16 md:pb-0">
+        <ThemeProvider>
+          {children}
+          <MobileBottomNav />
+        </ThemeProvider>
       </body>
     </html>
   );

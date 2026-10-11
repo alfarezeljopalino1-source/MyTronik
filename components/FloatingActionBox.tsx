@@ -56,7 +56,7 @@ export default function FloatingActionBox({
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] sm:max-w-2xl w-auto animate-fadeIn">
+    <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40 max-w-[95vw] sm:max-w-2xl w-auto animate-fadeIn">
       {/* Floating Island Box with Organic Hover Float Effect */}
       <div className="animate-float rounded-3xl border border-orange-500/40 dark:border-orange-500/40 bg-white/95 dark:bg-[#0E162E]/95 backdrop-blur-xl shadow-2xl shadow-orange-500/10 dark:shadow-black/70 p-2 sm:px-4 sm:py-2.5 flex items-center gap-2.5 sm:gap-4 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10">
         {/* Glowing Live Signal Badge */}
