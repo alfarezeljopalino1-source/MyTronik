@@ -116,13 +116,23 @@ export default function ProductOrderModal({
         date: today,
         customerWhatsApp: customerWhatsApp.trim(),
         customerEmail: customerEmail.trim() || undefined,
+        customerNotes: customerNotes.trim() || undefined,
         paymentMethod: paymentMethod,
-        status: "Diproses",
+        status: "Menunggu Konfirmasi",
         warrantyDaysRemaining: currentVariant.categoryType === "harian" ? 7 : 30,
       };
 
       orderList.unshift(newOrder);
       localStorage.setItem("mytronik-orders", JSON.stringify(orderList));
+
+      // Kirim pesanan ke server API agar admin dapat mengonfirmasi pesanan secara langsung
+      fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrder),
+      }).catch(() => {
+        // Fallback ke localStorage jika server offline
+      });
     } catch {
       // Ignored if storage restricted
     }

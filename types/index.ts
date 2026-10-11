@@ -118,6 +118,13 @@ export interface BlogPost {
 }
 
 /* ORDER SUBMISSION & TRACKING TYPES */
+export type OrderStatus =
+  | "Menunggu Konfirmasi"
+  | "Diproses"
+  | "Aktif"
+  | "Selesai"
+  | "Dibatalkan";
+
 export interface OrderRecord {
   id: string;
   service: string;
@@ -128,7 +135,10 @@ export interface OrderRecord {
   date: string;
   customerWhatsApp: string;
   customerEmail?: string;
+  customerNotes?: string;
   paymentMethod: string;
-  status: "Diproses" | "Aktif" | "Selesai";
+  status: OrderStatus;
   warrantyDaysRemaining: number;
+  confirmedAt?: string;
+  accountCredentials?: string;
 }

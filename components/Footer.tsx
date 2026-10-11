@@ -213,10 +213,12 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
           <p>© 2026 MyTronik. Platform Penjualan Paket Digital Terpercaya Indonesia.</p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap items-center gap-5 sm:gap-6">
             <span className="hover:text-slate-300 cursor-pointer">Syarat & Ketentuan</span>
             <span className="hover:text-slate-300 cursor-pointer">Kebijakan Privasi</span>
-            <span className="hover:text-slate-300 cursor-pointer">Kebijakan Garansi</span>
+            <Link href="/admin" className="text-slate-400 hover:text-orange-400 transition-colors">
+              Panel Admin
+            </Link>
           </div>
         </div>
       </div>

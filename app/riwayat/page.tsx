@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -17,18 +17,55 @@ import { OrderRecord } from "@/types";
 
 export default function RiwayatPage() {
   const [searchInvoice, setSearchInvoice] = useState("");
-  const [orders] = useState<OrderRecord[]>(() => {
-    if (typeof window !== "undefined") {
+  const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+
+  const syncOrders = useCallback(async () => {
+    try {
+      const res = await fetch("/api/orders");
+      const data = await res.json();
+      if (data.success && Array.isArray(data.orders)) {
+        setOrders(data.orders);
+        try {
+          localStorage.setItem("mytronik-orders", JSON.stringify(data.orders));
+        } catch {
+          // Ignored
+        }
+      }
+    } catch {
       try {
         const stored = localStorage.getItem("mytronik-orders");
-        if (stored) return JSON.parse(stored);
+        if (stored) setOrders(JSON.parse(stored));
       } catch {
         // Ignored
       }
+    } finally {
+      setIsLoaded(true);
     }
-    return [];
-  });
-  const [isLoaded] = useState(() => typeof window !== "undefined");
+  }, []);
+
+  useEffect(() => {
+    syncOrders();
+  }, [syncOrders]);
+
+  const handleClearAll = async () => {
+    const confirmClear = window.confirm(
+      "Apakah Anda yakin ingin mengosongkan seluruh riwayat pesanan uji coba?"
+    );
+    if (!confirmClear) return;
+    setIsClearing(true);
+    try {
+      await fetch("/api/orders", { method: "DELETE" });
+      localStorage.removeItem("mytronik-orders");
+      setOrders([]);
+    } catch {
+      localStorage.removeItem("mytronik-orders");
+      setOrders([]);
+    } finally {
+      setIsClearing(false);
+    }
+  };
   const filtered = orders.filter(
     (o) =>
       o.id.toLowerCase().includes(searchInvoice.toLowerCase()) ||
@@ -132,8 +169,15 @@ export default function RiwayatPage() {
             /* Menampilkan daftar pesanan yang tersimpan di localStorage */
             <div className="space-y-4">
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-                <span>Daftar Transaksi Tersimpan ({filtered.length})</span>
-                <span className="font-mono text-[11px]">Tersinkronisasi Otomatis</span>
+                <span>Daftar Transaksi ({filtered.length})</span>
+                <button
+                  type="button"
+                  onClick={handleClearAll}
+                  disabled={isClearing}
+                  className="text-red-500 hover:text-red-600 dark:hover:text-red-400 font-bold transition-colors cursor-pointer flex items-center gap-1 hover:underline"
+                >
+                  <span>🗑️ Kosongkan Riwayat Uji Coba</span>
+                </button>
               </div>
 
               {filtered.map((order) => (
@@ -148,10 +192,10 @@ export default function RiwayatPage() {
                       </span>
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          order.status === "Aktif"
+                          order.status === "Aktif" || order.status === "Selesai"
                             ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
-                            : order.status === "Diproses"
-                            ? "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+                            : order.status === "Menunggu Konfirmasi"
+                            ? "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse"
                             : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
                         }`}
                       >
@@ -174,6 +218,16 @@ export default function RiwayatPage() {
                       <p className="text-[11px] text-slate-400 font-mono">
                         Penerima WA: {order.customerWhatsApp}
                       </p>
+                    )}
+                    {order.accountCredentials && (
+                      <div className="mt-2.5 p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs">
+                        <span className="font-bold text-emerald-700 dark:text-emerald-300 block mb-1">
+                          Detail Akses Akun Anda:
+                        </span>
+                        <p className="font-mono text-[11px] text-slate-800 dark:text-slate-200 select-all bg-white dark:bg-slate-900 p-2 rounded-xl border border-emerald-200/50 dark:border-emerald-800/50">
+                          {order.accountCredentials}
+                        </p>
+                      </div>
                     )}
                   </div>
 
