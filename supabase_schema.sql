@@ -29,7 +29,11 @@ CREATE INDEX IF NOT EXISTS idx_orders_customer_whatsapp ON public.orders(custome
 CREATE INDEX IF NOT EXISTS idx_orders_status ON public.orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON public.orders(created_at DESC);
 
--- 3. Aktifkan Row Level Security (RLS)
+-- 3. Berikan Hak Akses Penuh ke Role Supabase (anon, authenticated, service_role)
+GRANT ALL ON TABLE public.orders TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+
+-- 4. Aktifkan Row Level Security (RLS)
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
 -- 4. Kebijakan Akses (RLS Policies):
