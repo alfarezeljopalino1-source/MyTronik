@@ -86,7 +86,7 @@ export default function ProductOrderModal({
     }
     const digitsOnly = cleanWhatsApp.replace(/\D/g, "");
     if (digitsOnly.length < 9) {
-      setFormError("Nomor WhatsApp belum lengkap. Masukkan nomor HP aktif minimal 9 digit angka (contoh: 081234567890).");
+      setFormError("Nomor WhatsApp belum lengkap. Masukkan nomor HP aktif minimal 9 digit angka (contoh: 085382191181).");
       return;
     }
     setFormError(null);
@@ -313,7 +313,7 @@ export default function ProductOrderModal({
                     setCustomerWhatsApp(e.target.value);
                     if (formError) setFormError(null);
                   }}
-                  placeholder="Contoh: 081234567890 atau 6281234567890"
+                  placeholder="Contoh: 085382191181 atau 6285382191181"
                   className={`w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white border transition-all focus:outline-none ${
                     formError
                       ? "border-orange-500 ring-2 ring-orange-500/20 bg-orange-50/20 dark:bg-orange-950/20"
@@ -491,7 +491,7 @@ export default function ProductOrderModal({
             <div className="space-y-3 max-w-md mx-auto pt-2">
               {/* WhatsApp direct trigger */}
               <a
-                href={`https://wa.me/6281234567890?text=${whatsappMessage}`}
+                href={`https://wa.me/6285382191181?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-4 rounded-2xl text-xs font-black uppercase tracking-wider text-white bg-[#25D366] hover:bg-[#20ba5a] shadow-xl shadow-emerald-950/30 transition-all flex items-center justify-center gap-2 cursor-pointer"

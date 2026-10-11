@@ -318,7 +318,7 @@ export default function BlogPage() {
                 Lihat Katalog Paket
               </Link>
               <a
-                href="https://wa.me/6281234567890?text=Halo%20Admin%20MyTronik,%20saya%20butuh%20rekomendasi%20paket%20digital."
+                href="https://wa.me/6285382191181?text=Halo%20Admin%20MyTronik,%20saya%20butuh%20rekomendasi%20paket%20digital."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all"

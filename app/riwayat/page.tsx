@@ -238,7 +238,7 @@ export default function RiwayatPage() {
                     </div>
 
                     <a
-                      href={`https://wa.me/6281234567890?text=${encodeURIComponent(
+                      href={`https://wa.me/6285382191181?text=${encodeURIComponent(
                         `Halo CS MyTronik, saya ingin menanyakan status pesanan saya dengan nomor invoice: ${order.id} (${order.service} ${order.planDuration}).`
                       )}`}
                       target="_blank"

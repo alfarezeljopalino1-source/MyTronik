@@ -24,6 +24,8 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [credentialsInputs, setCredentialsInputs] = useState<Record<string, string>>({});
+  const [isSupabaseActive, setIsSupabaseActive] = useState(false);
+  const [showDbGuide, setShowDbGuide] = useState(false);
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -32,6 +34,7 @@ export default function AdminPage() {
       const data = await res.json();
       if (data.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
+        setIsSupabaseActive(Boolean(data.supabaseActive));
       }
     } catch {
       // Fallback local storage
@@ -187,14 +190,76 @@ export default function AdminPage() {
 
         {/* Dashboard Title & Quick Stats */}
         <div className="space-y-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight font-sans">
-              Konfirmasi & Manajemen Pesanan
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              Kelola pesanan masuk dari pelanggan, kirimkan kredensial akun via WhatsApp, dan pantau status transaksi.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight font-sans">
+                Konfirmasi & Manajemen Pesanan
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                Kelola pesanan masuk dari pelanggan, kirimkan kredensial akun via WhatsApp, dan pantau status transaksi.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowDbGuide(!showDbGuide)}
+              className={`self-start sm:self-auto px-3.5 py-2 rounded-2xl text-xs font-bold border flex items-center gap-2 cursor-pointer transition-all shadow-sm ${
+                isSupabaseActive
+                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                  : "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/30 hover:bg-sky-500/20"
+              }`}
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isSupabaseActive ? "bg-emerald-500" : "bg-sky-500"
+                } animate-pulse`}
+              />
+              <span>
+                {isSupabaseActive
+                  ? "Database: Supabase Cloud (Aktif)"
+                  : "Database: File Lokal (Klik Panduan Supabase)"}
+              </span>
+            </button>
           </div>
+
+          {/* Panduan Integrasi Supabase jika diklik */}
+          {showDbGuide && (
+            <div className="p-5 rounded-3xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 text-xs space-y-3 animate-fadeIn">
+              <div className="flex items-center justify-between">
+                <h3 className="font-extrabold text-sky-900 dark:text-sky-200 flex items-center gap-2">
+                  <span>⚡ Panduan Aktivasi Database Supabase Cloud</span>
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowDbGuide(false)}
+                  className="text-sky-600 dark:text-sky-400 font-bold px-2"
+                >
+                  ✕ Tutup
+                </button>
+              </div>
+              <ol className="list-decimal list-inside space-y-1.5 text-slate-700 dark:text-slate-300 leading-relaxed">
+                <li>
+                  Buka project Anda di <strong>https://supabase.com</strong> (gratis).
+                </li>
+                <li>
+                  Buka menu <strong>SQL Editor</strong>, salin seluruh isi file{" "}
+                  <code className="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-900/60 font-mono font-bold text-sky-800 dark:text-sky-200">
+                    supabase_schema.sql
+                  </code>{" "}
+                  yang telah disediakan, lalu klik <strong>Run</strong>.
+                </li>
+                <li>
+                  Salin <strong>Project URL</strong> dan <strong>Anon Key</strong> dari menu{" "}
+                  <em>Project Settings &gt; API</em>.
+                </li>
+                <li>
+                  Tempelkan ke file <code className="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-900/60 font-mono font-bold">.env.local</code> di folder proyek MyTronik.
+                </li>
+                <li>
+                  Jalankan ulang <code className="px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-900/60 font-mono font-bold">npm run dev</code>. Status otomatis berubah menjadi hijau.
+                </li>
+              </ol>
+            </div>
+          )}
 
           {/* 4 Stat Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

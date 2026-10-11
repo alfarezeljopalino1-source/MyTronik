@@ -77,7 +77,6 @@ export default function HeroSection({
               {/* Primary CTA: Mulai Berlangganan */}
               <Link
                 href="/produk"
-                onClick={onExploreClick}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 px-7 py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
               >
                 <span>Mulai Berlangganan</span>
@@ -222,7 +221,7 @@ export default function HeroSection({
         </div>
 
         <a
-          href="https://wa.me/6281234567890?text=Halo%20Admin%20MyTronik,%20saya%20butuh%20bantuan%20layanan%20digital."
+          href="https://wa.me/6285382191181?text=Halo%20Admin%20MyTronik,%20saya%20butuh%20bantuan%20layanan%20digital."
           target="_blank"
           rel="noopener noreferrer"
           className="w-13 h-13 rounded-full bg-[#25D366] hover:bg-[#20ba5a] text-white flex items-center justify-center shadow-2xl shadow-emerald-950/60 transition-transform group-hover:scale-110 active:scale-95 cursor-pointer"

@@ -2,10 +2,18 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { OrderRecord } from "@/types";
+import {
+  isSupabaseReady,
+  getOrdersFromSupabase,
+  insertOrderToSupabase,
+  updateOrderInSupabase,
+  deleteOrderFromSupabase,
+  clearAllOrdersFromSupabase,
+} from "@/lib/supabase";
 
 const ORDERS_FILE = path.join(process.cwd(), "data", "orders.json");
 
-async function readOrders(): Promise<OrderRecord[]> {
+async function readLocalOrders(): Promise<OrderRecord[]> {
   try {
     const data = await fs.readFile(ORDERS_FILE, "utf-8");
     return JSON.parse(data);
@@ -14,22 +22,39 @@ async function readOrders(): Promise<OrderRecord[]> {
   }
 }
 
-async function writeOrders(orders: OrderRecord[]): Promise<void> {
+async function writeLocalOrders(orders: OrderRecord[]): Promise<void> {
   await fs.mkdir(path.dirname(ORDERS_FILE), { recursive: true });
   await fs.writeFile(ORDERS_FILE, JSON.stringify(orders, null, 2), "utf-8");
 }
 
-// GET: Ambil semua data pesanan
+// GET: Ambil semua data pesanan dari Supabase atau local file
 export async function GET() {
-  const orders = await readOrders();
-  return NextResponse.json({ success: true, orders });
+  const supabaseReady = isSupabaseReady();
+  let orders: OrderRecord[] | null = null;
+
+  if (supabaseReady) {
+    orders = await getOrdersFromSupabase();
+  }
+
+  // Jika Supabase belum aktif atau gagal, gunakan penyimpanan lokal
+  if (!orders) {
+    orders = await readLocalOrders();
+  } else {
+    // Sinkronkan ke lokal sebagai cache cadangan
+    await writeLocalOrders(orders);
+  }
+
+  return NextResponse.json({
+    success: true,
+    orders,
+    supabaseActive: supabaseReady,
+  });
 }
 
-// POST: Buat pesanan baru dari customer
+// POST: Simpan pesanan baru dari customer ke Supabase & local storage
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const orders = await readOrders();
 
     const newOrder: OrderRecord = {
       id: body.id || `INV-MYT-${Date.now().toString().slice(-6)}`,
@@ -38,7 +63,13 @@ export async function POST(req: Request) {
       planDuration: body.planDuration,
       priceFormatted: body.priceFormatted,
       samplePrice: Number(body.samplePrice) || 0,
-      date: body.date || new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
+      date:
+        body.date ||
+        new Intl.DateTimeFormat("id-ID", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }).format(new Date()),
       customerWhatsApp: body.customerWhatsApp,
       customerEmail: body.customerEmail || "",
       customerNotes: body.customerNotes || "",
@@ -49,10 +80,24 @@ export async function POST(req: Request) {
       accountCredentials: body.accountCredentials,
     };
 
-    orders.unshift(newOrder);
-    await writeOrders(orders);
+    // 1. Simpan ke database Supabase jika aktif
+    if (isSupabaseReady()) {
+      await insertOrderToSupabase(newOrder);
+    }
 
-    return NextResponse.json({ success: true, order: newOrder }, { status: 201 });
+    // 2. Simpan juga ke file lokal
+    const localOrders = await readLocalOrders();
+    localOrders.unshift(newOrder);
+    await writeLocalOrders(localOrders);
+
+    return NextResponse.json(
+      {
+        success: true,
+        order: newOrder,
+        savedToSupabase: isSupabaseReady(),
+      },
+      { status: 201 }
+    );
   } catch (error) {
     return NextResponse.json(
       { success: false, message: "Gagal menyimpan pesanan", error: String(error) },
@@ -68,28 +113,44 @@ export async function PATCH(req: Request) {
     const { id, status, accountCredentials } = body;
 
     if (!id) {
-      return NextResponse.json({ success: false, message: "ID pesanan diperlukan" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: "ID pesanan diperlukan" },
+        { status: 400 }
+      );
     }
 
-    const orders = await readOrders();
-    const targetIdx = orders.findIndex((o) => o.id === id);
+    const confirmedAt =
+      status === "Aktif" || status === "Selesai"
+        ? new Date().toLocaleString("id-ID")
+        : undefined;
 
-    if (targetIdx === -1) {
-      return NextResponse.json({ success: false, message: "Pesanan tidak ditemukan" }, { status: 404 });
-    }
-
-    if (status) {
-      orders[targetIdx].status = status;
-    }
-    if (accountCredentials !== undefined) {
-      orders[targetIdx].accountCredentials = accountCredentials;
-    }
-    if (status === "Aktif" || status === "Selesai") {
-      orders[targetIdx].confirmedAt = new Date().toLocaleString("id-ID");
+    // 1. Perbarui di Supabase jika aktif
+    if (isSupabaseReady()) {
+      await updateOrderInSupabase(id, {
+        status,
+        accountCredentials,
+        confirmedAt,
+      });
     }
 
-    await writeOrders(orders);
-    return NextResponse.json({ success: true, order: orders[targetIdx] });
+    // 2. Perbarui di penyimpanan lokal
+    const localOrders = await readLocalOrders();
+    const targetIdx = localOrders.findIndex((o) => o.id === id);
+
+    if (targetIdx !== -1) {
+      if (status) localOrders[targetIdx].status = status;
+      if (accountCredentials !== undefined) {
+        localOrders[targetIdx].accountCredentials = accountCredentials;
+      }
+      if (confirmedAt) localOrders[targetIdx].confirmedAt = confirmedAt;
+      await writeLocalOrders(localOrders);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `Pesanan ${id} berhasil diperbarui`,
+      updatedInSupabase: isSupabaseReady(),
+    });
   } catch (error) {
     return NextResponse.json(
       { success: false, message: "Gagal memperbarui pesanan", error: String(error) },
@@ -98,25 +159,41 @@ export async function PATCH(req: Request) {
   }
 }
 
-// DELETE: Hapus spesifik pesanan atau kosongkan seluruh riwayat uji coba
+// DELETE: Hapus pesanan spesifik atau kosongkan seluruh data uji coba
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get("id");
 
     if (orderId) {
-      const orders = await readOrders();
-      const filtered = orders.filter((o) => o.id !== orderId);
-      await writeOrders(filtered);
-      return NextResponse.json({ success: true, message: `Pesanan ${orderId} berhasil dihapus` });
+      // 1. Hapus dari Supabase jika aktif
+      if (isSupabaseReady()) {
+        await deleteOrderFromSupabase(orderId);
+      }
+      // 2. Hapus dari file lokal
+      const localOrders = await readLocalOrders();
+      const filtered = localOrders.filter((o) => o.id !== orderId);
+      await writeLocalOrders(filtered);
+
+      return NextResponse.json({
+        success: true,
+        message: `Pesanan ${orderId} berhasil dihapus`,
+      });
     }
 
-    // Jika tanpa parameter id, kosongkan seluruh riwayat
-    await writeOrders([]);
-    return NextResponse.json({ success: true, message: "Seluruh riwayat pesanan berhasil dikosongkan" });
+    // Kosongkan seluruh pesanan
+    if (isSupabaseReady()) {
+      await clearAllOrdersFromSupabase();
+    }
+    await writeLocalOrders([]);
+
+    return NextResponse.json({
+      success: true,
+      message: "Seluruh riwayat pesanan pelanggan berhasil dikosongkan",
+    });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Gagal menghapus riwayat pesanan", error: String(error) },
+      { success: false, message: "Gagal menghapus pesanan", error: String(error) },
       { status: 500 }
     );
   }
