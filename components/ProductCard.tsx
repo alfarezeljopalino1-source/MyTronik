@@ -84,7 +84,7 @@ export default function ProductCard({
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
 
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
@@ -201,7 +201,7 @@ export default function ProductCard({
           <button
             type="button"
             onClick={() => onOpenDetail(product, selectedVariantIdx)}
-            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow-md shadow-blue-900/20 dark:shadow-blue-900/30 cursor-pointer"
+            className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-blue-600 to-sky-600 hover:from-blue-500 hover:to-sky-500 text-white px-4 py-2.5 text-xs font-bold transition-all shadow-md shadow-blue-900/20 dark:shadow-blue-900/30 cursor-pointer"
           >
             Lihat Detail
           </button>
