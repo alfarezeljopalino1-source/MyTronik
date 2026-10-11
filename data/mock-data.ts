@@ -427,7 +427,7 @@ export const ORDER_STEPS: OrderStep[] = [
     step: 2,
     title: "Konfirmasi & Pembayaran Aman",
     description:
-      "Lakukan simulasi pembayaran melalui QRIS, E-Wallet (GoPay, OVO, DANA), atau Transfer Bank secara instan tanpa biaya tersembunyi.",
+      "Lakukan pembayaran melalui QRIS, E-Wallet (GoPay, OVO, DANA), atau Transfer Bank secara instan tanpa biaya tersembunyi.",
     badge: "Langkah 2",
   },
   {

@@ -329,7 +329,7 @@ export default function UnifiedPackageSelector() {
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
                   <div>
                     <span className="text-[10px] text-slate-500 dark:text-slate-400 block uppercase font-bold tracking-wider">
-                      Total Biaya Simulasi:
+                      Total Biaya:
                     </span>
                     <div className="flex items-baseline gap-1.5 mt-0.5">
                       <span className="text-2xl font-black text-slate-900 dark:text-white">

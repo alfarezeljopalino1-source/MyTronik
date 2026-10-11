@@ -111,7 +111,7 @@ export default function Navbar() {
                   <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
                     Belum ada pemberitahuan baru
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed max-w-[200px] mx-auto">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed max-w-50 mx-auto">
                     Pemberitahuan promo dan info transaksi Anda akan tampil di sini.
                   </p>
                 </div>

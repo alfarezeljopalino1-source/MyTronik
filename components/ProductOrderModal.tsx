@@ -372,7 +372,7 @@ export default function ProductOrderModal({
           </form>
         )}
 
-        {/* STEP 3: Metode Pembayaran (Simulasi) */}
+        {/* STEP 3: Metode Pembayaran */}
         {step === 3 && (
           <div className="p-6 sm:p-8 space-y-6">
             <div>
@@ -380,7 +380,7 @@ export default function ProductOrderModal({
                 Pilih Metode Pembayaran
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Pilih metode pembayaran simulasi favorit Anda di bawah ini:
+                Pilih metode pembayaran favorit Anda di bawah ini:
               </p>
             </div>
 

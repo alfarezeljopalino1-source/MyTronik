@@ -80,7 +80,7 @@ export default function ProductDetailModal({
   const handleSimulateOrder = () => {
     const message = `Halo CS MyTronik, saya berminat memesan *${product.name}* durasi *${currentVariant.duration}* seharga *${formatRupiah(currentVariant.samplePrice)}*. Mohon info ketersediaan slot aktivasi.`;
     setSimulationNotice(
-      `Format Pesanan Disiapkan:\n"${message}"\n\n(Catatan: Ini adalah prototipe antarmuka toko. Pembayaran riil belum diaktifkan).`
+      `Format Pesanan Disiapkan:\n"${message}"\n\nSilakan kirimkan format pesan di atas ke layanan WhatsApp pelanggan untuk melanjutkan konfirmasi pesanan.`
     );
   };
 
@@ -183,7 +183,7 @@ export default function ProductDetailModal({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 gap-4">
             <div>
               <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">
-                Harga Contoh ({currentVariant.duration}):
+                Harga Paket ({currentVariant.duration}):
               </span>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-black text-slate-900 dark:text-white">
@@ -269,7 +269,7 @@ export default function ProductDetailModal({
             <div className="rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 p-4 text-xs text-sky-900 dark:text-sky-200 whitespace-pre-line leading-relaxed animate-fadeIn">
               <div className="flex items-center gap-2 font-bold mb-1.5 text-sky-700 dark:text-sky-300">
                 <CheckCircle2Icon className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                <span>Simulasi Permintaan Pesanan:</span>
+                <span>Format Permintaan Pesanan:</span>
               </div>
               {simulationNotice}
             </div>

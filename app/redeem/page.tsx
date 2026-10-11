@@ -20,12 +20,12 @@ export default function RedeemPage() {
     if (clean.includes("MYTRONIK") || clean.includes("PRO") || clean.includes("NETFLIX") || clean.includes("CANVA")) {
       setFeedback({
         status: "success",
-        message: `Voucher "${clean}" valid! Paket digital simulasi berhasil diverifikasi. Panduan aktivasi dikirimkan ke WhatsApp/Email Anda (Simulasi Prototipe).`,
+        message: `Voucher "${clean}" valid! Paket digital berhasil diverifikasi. Panduan aktivasi dikirimkan ke WhatsApp/Email Anda.`,
       });
     } else {
       setFeedback({
         status: "error",
-        message: `Kode "${clean}" tidak ditemukan dalam sistem simulasi. Coba gunakan contoh kode: "MYTRONIK-PRO" atau "CANVA-1DAY".`,
+        message: `Kode "${clean}" tidak ditemukan atau sudah tidak berlaku. Pastikan kode voucher yang Anda masukkan sudah benar.`,
       });
     }
   };

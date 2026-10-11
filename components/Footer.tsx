@@ -106,7 +106,7 @@ export default function Footer() {
             {/* Payment simulation badges */}
             <div className="space-y-2 pt-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                Metode Pembayaran (Contoh Simulasi):
+                Metode Pembayaran:
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {paymentMethods.map((pm) => (
