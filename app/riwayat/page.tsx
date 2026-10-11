@@ -236,6 +236,13 @@ export default function RiwayatPage() {
                       <CheckCircle2Icon className="w-4 h-4 shrink-0" />
                       <span>Garansi: {order.warrantyDaysRemaining} Hari</span>
                     </div>
+                    <Link
+                      href={`/redeem?code=${order.voucherCode || order.id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-sm transition-all"
+                    >
+                      <ZapIcon className="w-3.5 h-3.5" />
+                      <span>Buka Akses Akun</span>
+                    </Link>
 
                     <a
                       href={`https://wa.me/6285382191181?text=${encodeURIComponent(

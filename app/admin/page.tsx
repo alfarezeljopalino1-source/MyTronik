@@ -398,10 +398,19 @@ export default function AdminPage() {
                 >
                   {/* Order Card Header */}
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs font-black text-orange-500">
                         {order.id}
                       </span>
+                      {order.voucherCode && (
+                        <Link
+                          href={`/redeem?code=${order.voucherCode}`}
+                          target="_blank"
+                          className="px-2 py-0.5 rounded-md bg-orange-500/10 text-orange-600 dark:text-orange-400 font-mono font-bold text-[10px] hover:underline"
+                        >
+                          Voucher: {order.voucherCode} ↗
+                        </Link>
+                      )}
                       <span className="text-[11px] text-slate-400">• {order.date}</span>
                     </div>
 

@@ -32,8 +32,19 @@ export function isSupabaseReady(): boolean {
   );
 }
 
-// Convert from database row to OrderRecord
+// Convert from database row to OrderRecord with smart JSON unpacking for voucher fields
 export function mapRowToOrder(row: Record<string, unknown>): OrderRecord {
+  let unpacked: Record<string, unknown> = {};
+  const rawCreds = row.account_credentials ? String(row.account_credentials) : "";
+
+  if (rawCreds && rawCreds.startsWith("{") && rawCreds.endsWith("}")) {
+    try {
+      unpacked = JSON.parse(rawCreds);
+    } catch {
+      unpacked = {};
+    }
+  }
+
   return {
     id: String(row.id || ""),
     service: String(row.service || ""),
@@ -45,16 +56,34 @@ export function mapRowToOrder(row: Record<string, unknown>): OrderRecord {
     customerWhatsApp: String(row.customer_whatsapp || ""),
     customerEmail: row.customer_email ? String(row.customer_email) : undefined,
     customerNotes: row.customer_notes ? String(row.customer_notes) : undefined,
+    customerName: (row.customer_name as string) || (unpacked.customerName as string) || undefined,
     paymentMethod: String(row.payment_method || ""),
     status: (row.status as OrderStatus) || "Menunggu Konfirmasi",
     warrantyDaysRemaining: Number(row.warranty_days || 30),
     confirmedAt: row.confirmed_at ? String(row.confirmed_at) : undefined,
-    accountCredentials: row.account_credentials ? String(row.account_credentials) : undefined,
+    accountCredentials: (unpacked.text as string) || rawCreds || undefined,
+    voucherCode: (row.voucher_code as string) || (unpacked.voucherCode as string) || undefined,
+    accountEmail: (row.account_email as string) || (unpacked.accountEmail as string) || undefined,
+    accountPassword: (row.account_password as string) || (unpacked.accountPassword as string) || undefined,
+    accountProfile: (row.account_profile as string) || (unpacked.accountProfile as string) || undefined,
+    accountPin: (row.account_pin as string) || (unpacked.accountPin as string) || undefined,
+    autoLoginUrl: (row.auto_login_url as string) || (unpacked.autoLoginUrl as string) || undefined,
   };
 }
 
-// Convert from OrderRecord to database row payload
+// Convert from OrderRecord to database row payload compatible with existing Supabase schema
 export function mapOrderToRow(order: OrderRecord): Record<string, unknown> {
+  const credentialsJson = JSON.stringify({
+    text: order.accountCredentials || "",
+    voucherCode: order.voucherCode || `MYT-${order.brandKey.toUpperCase().slice(0, 3)}-${order.id.slice(-4)}`,
+    customerName: order.customerName || "",
+    accountEmail: order.accountEmail || "",
+    accountPassword: order.accountPassword || "",
+    accountProfile: order.accountProfile || "",
+    accountPin: order.accountPin || "",
+    autoLoginUrl: order.autoLoginUrl || "",
+  });
+
   return {
     id: order.id,
     service: order.service,
@@ -70,11 +99,10 @@ export function mapOrderToRow(order: OrderRecord): Record<string, unknown> {
     status: order.status,
     warranty_days: order.warrantyDaysRemaining,
     confirmed_at: order.confirmedAt || null,
-    account_credentials: order.accountCredentials || null,
+    account_credentials: credentialsJson,
   };
 }
 
-// Get all orders from Supabase
 export async function getOrdersFromSupabase(): Promise<OrderRecord[] | null> {
   const client = getSupabaseClient();
   if (!client) return null;
@@ -97,7 +125,6 @@ export async function getOrdersFromSupabase(): Promise<OrderRecord[] | null> {
   }
 }
 
-// Insert order into Supabase
 export async function insertOrderToSupabase(order: OrderRecord): Promise<boolean> {
   const client = getSupabaseClient();
   if (!client) return false;
@@ -116,23 +143,47 @@ export async function insertOrderToSupabase(order: OrderRecord): Promise<boolean
   }
 }
 
-// Update order status/credentials in Supabase
 export async function updateOrderInSupabase(
   id: string,
-  updates: { status?: OrderStatus; accountCredentials?: string; confirmedAt?: string }
+  updates: Partial<OrderRecord>
 ): Promise<boolean> {
   const client = getSupabaseClient();
   if (!client) return false;
 
   try {
-    const payload: Record<string, unknown> = {};
-    if (updates.status) payload.status = updates.status;
-    if (updates.accountCredentials !== undefined) payload.account_credentials = updates.accountCredentials;
-    if (updates.confirmedAt) payload.confirmed_at = updates.confirmedAt;
+    // Fetch existing row first to merge credentials cleanly
+    const { data: existingData } = await client.from("orders").select("*").eq("id", id).single();
+    let existingOrder: OrderRecord = {
+      id,
+      service: "",
+      brandKey: "netflix",
+      planDuration: "",
+      priceFormatted: "",
+      samplePrice: 0,
+      date: "",
+      customerWhatsApp: "",
+      paymentMethod: "",
+      status: "Diproses",
+      warrantyDaysRemaining: 30,
+    };
 
+    if (existingData) {
+      existingOrder = mapRowToOrder(existingData);
+    }
+
+    const merged: OrderRecord = {
+      ...existingOrder,
+      ...updates,
+    };
+
+    const row = mapOrderToRow(merged);
     const { error } = await client
       .from("orders")
-      .update(payload)
+      .update({
+        status: row.status,
+        confirmed_at: row.confirmed_at,
+        account_credentials: row.account_credentials,
+      })
       .eq("id", id);
 
     if (error) {
@@ -146,7 +197,6 @@ export async function updateOrderInSupabase(
   }
 }
 
-// Delete single order in Supabase
 export async function deleteOrderFromSupabase(id: string): Promise<boolean> {
   const client = getSupabaseClient();
   if (!client) return false;
@@ -164,13 +214,11 @@ export async function deleteOrderFromSupabase(id: string): Promise<boolean> {
   }
 }
 
-// Clear all orders in Supabase
 export async function clearAllOrdersFromSupabase(): Promise<boolean> {
   const client = getSupabaseClient();
   if (!client) return false;
 
   try {
-    // Delete all records where id is not empty
     const { error } = await client.from("orders").delete().neq("id", "");
     if (error) {
       console.warn("Supabase clear error:", error.message);

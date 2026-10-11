@@ -136,9 +136,42 @@ export interface OrderRecord {
   customerWhatsApp: string;
   customerEmail?: string;
   customerNotes?: string;
+  customerName?: string;
   paymentMethod: string;
   status: OrderStatus;
   warrantyDaysRemaining: number;
   confirmedAt?: string;
   accountCredentials?: string;
+  voucherCode?: string;
+  accountEmail?: string;
+  accountPassword?: string;
+  accountProfile?: string;
+  accountPin?: string;
+  autoLoginUrl?: string;
+}
+
+export interface VoucherPackageDetails {
+  code: string;
+  orderId: string;
+  brandKey: BrandKey;
+  serviceName: string;
+  planType: string;
+  claimedBy: string;
+  accountEmail: string;
+  accountPassword: string;
+  accountProfile: string;
+  accountPin?: string;
+  expiryDate: string;
+  warrantyDays: number;
+  autoLoginLinks: {
+    mobile?: string;
+    pc?: string;
+    tv?: string;
+  };
+  otpInbox?: Array<{
+    id: string;
+    code: string;
+    subject: string;
+    receivedAt: string;
+  }>;
 }

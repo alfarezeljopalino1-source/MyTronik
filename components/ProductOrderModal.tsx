@@ -30,11 +30,14 @@ export default function ProductOrderModal({
 }: ProductOrderModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(initialVariantIndex);
+  const [customerName, setCustomerName] = useState("");
   const [customerWhatsApp, setCustomerWhatsApp] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("QRIS Instan (GoPay, OVO, DANA, ShopeePay)");
   const [generatedInvoice, setGeneratedInvoice] = useState("INV-MYT-84291");
+  const [generatedVoucher, setGeneratedVoucher] = useState("MYT-NET-9821");
+  const [voucherCopied, setVoucherCopied] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [prevProduct, setPrevProduct] = useState(product);
   const [prevIndex, setPrevIndex] = useState(initialVariantIndex);
@@ -45,6 +48,11 @@ export default function ProductOrderModal({
     setSelectedVariantIdx(initialVariantIndex);
     setStep(1);
     setFormError(null);
+    const invNum = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeSuffix = Math.floor(1000 + Math.random() * 9000).toString();
+    const brandCode = product ? product.brandKey.toUpperCase().slice(0, 3) : "MYT";
+    setGeneratedInvoice(`INV-MYT-${invNum}`);
+    setGeneratedVoucher(`MYT-${brandCode}-${codeSuffix}`);
   }
 
   useEffect(() => {
@@ -106,6 +114,13 @@ export default function ProductOrderModal({
         year: "numeric",
       }).format(new Date());
 
+      const vCode =
+        generatedVoucher ||
+        `MYT-${product.brandKey.toUpperCase().slice(0, 3)}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const cName = customerName.trim() || "Pelanggan MyTronik";
+      const randomAccId = Math.random().toString(36).substring(2, 8);
+      const sampleAutoLogin = `https://paytronik.digitalpremium.id/1/${randomAccId}`;
+
       const newOrder: OrderRecord = {
         id: generatedInvoice,
         service: product.name,
@@ -114,12 +129,19 @@ export default function ProductOrderModal({
         priceFormatted: formatRupiah(currentVariant.samplePrice),
         samplePrice: currentVariant.samplePrice,
         date: today,
+        customerName: cName,
         customerWhatsApp: customerWhatsApp.trim(),
         customerEmail: customerEmail.trim() || undefined,
         customerNotes: customerNotes.trim() || undefined,
         paymentMethod: paymentMethod,
         status: "Menunggu Konfirmasi",
         warrantyDaysRemaining: currentVariant.categoryType === "harian" ? 7 : 30,
+        voucherCode: vCode,
+        accountEmail: `user.${randomAccId}@mytronik.id`,
+        accountPassword: `myt${Math.floor(100 + Math.random() * 900)}pass`,
+        accountProfile: `Profil C (PIN: 1234)`,
+        accountPin: "1234",
+        autoLoginUrl: sampleAutoLogin,
       };
 
       orderList.unshift(newOrder);
@@ -143,15 +165,16 @@ export default function ProductOrderModal({
   const whatsappMessage = encodeURIComponent(
     `Halo CS MyTronik, saya telah membuat pesanan digital:\n` +
       `• No. Invoice: ${generatedInvoice}\n` +
+      `• Kode Voucher: ${generatedVoucher}\n` +
+      `• Nama Pembeli: ${customerName.trim() || "Pelanggan"}\n` +
       `• Layanan: ${product.name}\n` +
       `• Durasi: ${currentVariant.duration}\n` +
       `• Total Biaya: ${formatRupiah(currentVariant.samplePrice)}\n` +
       `• Metode Bayar: ${paymentMethod}\n` +
       `• WhatsApp Pembeli: ${customerWhatsApp}\n` +
       (customerEmail ? `• Email Pembeli: ${customerEmail}\n` : "") +
-      `Mohon dibantu proses pengiriman akun/voucher.`
+      `Mohon dibantu proses aktivasi akun/voucher.`
   );
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fadeIn">
       <div className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] shadow-2xl text-slate-800 dark:text-slate-100">
@@ -302,6 +325,19 @@ export default function ProductOrderModal({
             </div>
 
             <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 block mb-1.5">
+                  Nama Pelanggan <span className="text-slate-400 font-normal">(Untuk Tiket Voucher Akses)</span>
+                </label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Contoh: Alfarezel Jopalino"
+                  className="w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 focus:border-orange-500 focus:outline-none"
+                />
+              </div>
+
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 block mb-1.5">
                   Nomor WhatsApp Aktif <span className="text-orange-500">* (Wajib)</span>
@@ -487,8 +523,43 @@ export default function ProductOrderModal({
               </p>
             </div>
 
+            {/* Voucher Card Banner */}
+            <div className="p-4 rounded-3xl bg-linear-to-br from-orange-500/10 via-amber-500/10 to-transparent border border-orange-500/30 text-center space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400 block">
+                Kode Voucher Akses Akun Anda:
+              </span>
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-xl sm:text-2xl font-mono font-black text-slate-900 dark:text-white tracking-wider bg-white dark:bg-slate-850 px-3.5 py-1.5 rounded-xl border border-orange-500/30 shadow-inner">
+                  {generatedVoucher}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedVoucher);
+                    setVoucherCopied(true);
+                    setTimeout(() => setVoucherCopied(false), 2500);
+                  }}
+                  className="px-3 py-2 text-xs font-bold rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition-all cursor-pointer shadow-sm active:scale-95"
+                >
+                  {voucherCopied ? "✓ Tersalin" : "Salin"}
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Gunakan kode voucher di atas untuk membuka akun digital & panduan login Anda.
+              </p>
+            </div>
+
             {/* Action buttons */}
             <div className="space-y-3 max-w-md mx-auto pt-2">
+              {/* Direct Voucher Claim Button */}
+              <Link
+                href={`/redeem?code=${generatedVoucher}`}
+                onClick={onClose}
+                className="w-full py-4 rounded-2xl text-xs font-black uppercase tracking-wider text-white bg-linear-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <ZapIcon className="w-5 h-5" />
+                <span>Buka & Klaim Akses Akun Sekarang</span>
+              </Link>
               {/* WhatsApp direct trigger */}
               <a
                 href={`https://wa.me/6285382191181?text=${whatsappMessage}`}
