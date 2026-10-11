@@ -11,12 +11,16 @@ import ServiceHighlights from "@/components/ServiceHighlights";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
+import FloatingActionBox from "@/components/FloatingActionBox";
+import ProductOrderModal from "@/components/ProductOrderModal";
 import { PRODUCTS } from "@/data/mock-data";
-import { BrandKey } from "@/types";
+import { BrandKey, Product } from "@/types";
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedBrand, setSelectedBrand] = useState<BrandKey | null>(null);
+  const [orderModalProduct, setOrderModalProduct] = useState<Product | null>(null);
+  const [orderVariantIndex, setOrderVariantIndex] = useState(0);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
   const handleExploreClick = () => {
     const elem = document.getElementById("produk");
@@ -33,14 +37,16 @@ export default function Home() {
     }
   };
 
+  const handleOpenOrderModal = (product: Product, variantIndex: number) => {
+    setOrderModalProduct(product);
+    setOrderVariantIndex(variantIndex);
+    setIsOrderModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0A1128] text-slate-900 dark:text-slate-100 selection:bg-sky-500 selection:text-white transition-colors duration-250">
       {/* 1. Header / Navbar with Light/Dark Mode Switcher */}
-      <Navbar
-        searchQuery={searchQuery}
-        onSearchChange={(q) => setSearchQuery(q)}
-        onSelectBrand={handleSelectBrand}
-      />
+      <Navbar />
 
       {/* Main Sections */}
       <main className="flex-1">
@@ -58,7 +64,7 @@ export default function Home() {
           products={PRODUCTS}
           selectedBrand={selectedBrand}
           onSelectBrand={(b) => setSelectedBrand(b)}
-          searchQuery={searchQuery}
+          searchQuery=""
         />
 
         {/* 5. Cara Pemesanan 3 Langkah Mudah */}
@@ -76,6 +82,20 @@ export default function Home() {
         {/* 9. FAQ Seputar Netflix, Spotify, CapCut & Canva */}
         <FAQSection />
       </main>
+
+      {/* Floating Action Island Box (Mengapung otomatis saat digulir ke bawah) */}
+      <FloatingActionBox
+        products={PRODUCTS}
+        onOpenOrderModal={handleOpenOrderModal}
+      />
+
+      {/* Product Order Modal Checkout Flow */}
+      <ProductOrderModal
+        product={orderModalProduct}
+        initialVariantIndex={orderVariantIndex}
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+      />
 
       {/* 10. Footer Navigasi & Legal Disclaimer */}
       <Footer />

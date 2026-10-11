@@ -15,28 +15,32 @@ import {
   SpotifyIcon,
   CapCutIcon,
   CanvaIcon,
-  WhatsAppIcon,
 } from "./ui/icons";
 
 interface ProductDetailModalProps {
   product: Product | null;
   initialVariantIndex?: number;
   onClose: () => void;
+  onOrderNow?: (product: Product, variantIndex: number) => void;
 }
 
 export default function ProductDetailModal({
   product,
   initialVariantIndex = 0,
   onClose,
+  onOrderNow,
 }: ProductDetailModalProps) {
+  const [prevProduct, setPrevProduct] = useState(product);
+  const [prevIndex, setPrevIndex] = useState(initialVariantIndex);
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(initialVariantIndex);
   const [simulationNotice, setSimulationNotice] = useState<string | null>(null);
 
-  useEffect(() => {
+  if (product !== prevProduct || initialVariantIndex !== prevIndex) {
+    setPrevProduct(product);
+    setPrevIndex(initialVariantIndex);
     setSelectedVariantIdx(initialVariantIndex);
     setSimulationNotice(null);
-  }, [product, initialVariantIndex]);
-
+  }
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -74,7 +78,7 @@ export default function ProductDetailModal({
   };
 
   const handleSimulateOrder = () => {
-    const message = `Halo CS MyTronik, saya berminat memesan *${product.name}* durasi *${currentVariant.duration}* seharga *${formatRupiah(currentVariant.samplePrice)}* (Data Contoh Simulasi). Mohon info ketersediaan slot aktivasi.`;
+    const message = `Halo CS MyTronik, saya berminat memesan *${product.name}* durasi *${currentVariant.duration}* seharga *${formatRupiah(currentVariant.samplePrice)}*. Mohon info ketersediaan slot aktivasi.`;
     setSimulationNotice(
       `Format Pesanan Disiapkan:\n"${message}"\n\n(Catatan: Ini adalah prototipe antarmuka toko. Pembayaran riil belum diaktifkan).`
     );
@@ -190,9 +194,6 @@ export default function ProductDetailModal({
                     {formatRupiah(currentVariant.sampleOriginalPrice)}
                   </span>
                 )}
-                <span className="text-[10px] text-amber-500 font-bold">
-                  *(Data Contoh)
-                </span>
               </div>
             </div>
 
@@ -286,11 +287,17 @@ export default function ProductDetailModal({
 
             <button
               type="button"
-              onClick={handleSimulateOrder}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 hover:brightness-110 rounded-xl shadow-lg shadow-blue-900/30 transition-all cursor-pointer"
+              onClick={() => {
+                if (onOrderNow && product) {
+                  onOrderNow(product, selectedVariantIdx);
+                } else {
+                  handleSimulateOrder();
+                }
+              }}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 rounded-xl shadow-lg shadow-orange-500/25 transition-all cursor-pointer"
             >
-              <WhatsAppIcon className="w-4 h-4" />
-              <span>Simulasi Pesan via WhatsApp</span>
+              <ZapIcon className="w-4 h-4" />
+              <span>Lanjut Pesan Sekarang</span>
             </button>
           </div>
         </div>

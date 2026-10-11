@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Product, BrandKey } from "@/types";
 import ProductCard from "./ProductCard";
 import ProductDetailModal from "./ProductDetailModal";
+import ProductOrderModal from "./ProductOrderModal";
+import ScrollReveal from "./ui/ScrollReveal";
 import {
   FilterIcon,
   SearchIcon,
@@ -32,6 +34,9 @@ export default function FeaturedProducts({
     null
   );
   const [activeVariantIndex, setActiveVariantIndex] = useState(0);
+  const [orderModalProduct, setOrderModalProduct] = useState<Product | null>(null);
+  const [orderVariantIndex, setOrderVariantIndex] = useState(0);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
   const brandTabs: {
     key: BrandKey | null;
@@ -163,15 +168,21 @@ export default function FeaturedProducts({
         {/* Products Grid */}
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard
+            {filteredProducts.map((product, index) => (
+              <ScrollReveal
                 key={product.id}
-                product={product}
-                onOpenDetail={(prod, variantIdx = 0) => {
-                  setActiveModalProduct(prod);
-                  setActiveVariantIndex(variantIdx);
-                }}
-              />
+                delay={index * 140}
+                distance={60}
+                className="h-full flex flex-col"
+              >
+                <ProductCard
+                  product={product}
+                  onOpenDetail={(prod, variantIdx = 0) => {
+                    setActiveModalProduct(prod);
+                    setActiveVariantIndex(variantIdx);
+                  }}
+                />
+              </ScrollReveal>
             ))}
           </div>
         ) : (
@@ -200,6 +211,20 @@ export default function FeaturedProducts({
         product={activeModalProduct}
         initialVariantIndex={activeVariantIndex}
         onClose={() => setActiveModalProduct(null)}
+        onOrderNow={(prod, variantIdx) => {
+          setActiveModalProduct(null);
+          setOrderModalProduct(prod);
+          setOrderVariantIndex(variantIdx);
+          setIsOrderModalOpen(true);
+        }}
+      />
+
+      {/* Product Order Modal Checkout Flow */}
+      <ProductOrderModal
+        product={orderModalProduct}
+        initialVariantIndex={orderVariantIndex}
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
       />
     </section>
   );

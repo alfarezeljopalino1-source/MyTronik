@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { CheckIcon, ZapIcon, NetflixIcon, SpotifyIcon, CapCutIcon, CanvaIcon } from "@/components/ui/icons";
+import { NetflixIcon, SpotifyIcon, CapCutIcon, CanvaIcon } from "@/components/ui/icons";
 
 export default function TutorialPage() {
   const [activeTab, setActiveTab] = useState<"netflix" | "spotify" | "capcut" | "canva">("netflix");

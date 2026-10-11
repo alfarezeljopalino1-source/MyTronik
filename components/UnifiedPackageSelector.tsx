@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { PRODUCTS, formatRupiah } from "@/data/mock-data";
 import { BrandKey, PlanCategoryType, PlanVariant } from "@/types";
+import ProductOrderModal from "./ProductOrderModal";
+import ScrollReveal from "./ui/ScrollReveal";
 import {
   NetflixIcon,
   SpotifyIcon,
@@ -11,25 +13,17 @@ import {
   ZapIcon,
   CheckIcon,
   ShieldCheckIcon,
-  WhatsAppIcon,
-  CheckCircle2Icon,
   StarIcon,
   SparklesIcon,
+  ArrowRightIcon,
 } from "./ui/icons";
 
-interface UnifiedPackageSelectorProps {
-  onOpenDetailModal?: (brandKey: BrandKey, variantIdx: number) => void;
-}
-
-export default function UnifiedPackageSelector({
-  onOpenDetailModal,
-}: UnifiedPackageSelectorProps) {
+export default function UnifiedPackageSelector() {
   const [selectedBrand, setSelectedBrand] = useState<BrandKey>("netflix");
   const [selectedCategoryType, setSelectedCategoryType] =
     useState<PlanCategoryType>("harian");
   const [selectedVariantId, setSelectedVariantId] = useState<string>("net-1d");
-  const [orderNotice, setOrderNotice] = useState<string | null>(null);
-
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const currentProduct =
     PRODUCTS.find((p) => p.brandKey === selectedBrand) || PRODUCTS[0];
 
@@ -93,7 +87,6 @@ export default function UnifiedPackageSelector({
 
   const handleBrandChange = (brand: BrandKey) => {
     setSelectedBrand(brand);
-    setOrderNotice(null);
     const prod = PRODUCTS.find((p) => p.brandKey === brand);
     if (prod) {
       const matchVars = prod.planVariants.filter(
@@ -107,18 +100,12 @@ export default function UnifiedPackageSelector({
 
   const handleCategoryTypeChange = (type: PlanCategoryType) => {
     setSelectedCategoryType(type);
-    setOrderNotice(null);
     const matchVars = currentProduct.planVariants.filter(
       (v) => v.categoryType === type
     );
     if (matchVars.length > 0 && matchVars[0].id) {
       setSelectedVariantId(matchVars[0].id);
     }
-  };
-
-  const handleSimulateOrder = () => {
-    const text = `Halo Admin MyTronik, saya ingin memesan *${currentProduct.name}* tipe *${activeVariant.duration}* seharga *${formatRupiah(activeVariant.samplePrice)}* (Data Contoh Simulasi). Mohon info slot aktivasi cepat.`;
-    setOrderNotice(text);
   };
 
   return (
@@ -128,26 +115,29 @@ export default function UnifiedPackageSelector({
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1 text-xs font-bold text-sky-700 dark:text-sky-300 mb-3">
-            <SparklesIcon className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
-            <span>Pusat Konfigurasi Paket Mandiri</span>
+        <ScrollReveal delay={0}>
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1 text-xs font-bold text-sky-700 dark:text-sky-300 mb-3">
+              <SparklesIcon className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
+              <span>Pusat Konfigurasi Paket Mandiri</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              Semua Paket Menjadi Satu,{" "}
+              <span className="bg-gradient-to-r from-sky-500 via-emerald-500 to-indigo-500 dark:from-sky-400 dark:via-emerald-400 dark:to-indigo-300 bg-clip-text text-transparent">
+                Anda Bebas Menentukan Pilihan
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed">
+              Pilih aplikasi favorit, tentukan durasi harian super murah (mulai Rp1.500*) atau bulanan hemat, dan nikmati aktivasi kilat 5-10 menit bergaransi penuh.
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-            Semua Paket Menjadi Satu,{" "}
-            <span className="bg-gradient-to-r from-sky-500 via-emerald-500 to-indigo-500 dark:from-sky-400 dark:via-emerald-400 dark:to-indigo-300 bg-clip-text text-transparent">
-              Anda Bebas Menentukan Pilihan
-            </span>
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2.5 leading-relaxed">
-            Pilih aplikasi favorit, tentukan durasi harian super murah (mulai Rp1.500*) atau bulanan hemat, dan nikmati aktivasi kilat 5-10 menit bergaransi penuh.
-          </p>
-        </div>
+        </ScrollReveal>
 
         {/* 2-Column Interactive Workspace */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Interactive Selector Steps */}
-          <div className="lg:col-span-7 space-y-8 bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800/90 p-6 sm:p-8 rounded-3xl backdrop-blur-xl shadow-xl dark:shadow-2xl">
+          <ScrollReveal delay={100} distance={60} threshold={0.08} className="lg:col-span-7">
+            <div className="space-y-8 bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800/90 p-6 sm:p-8 rounded-3xl backdrop-blur-xl shadow-xl dark:shadow-2xl">
             {/* Step 1: Pilih Aplikasi */}
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -256,7 +246,6 @@ export default function UnifiedPackageSelector({
                       key={variant.id || variant.duration}
                       onClick={() => {
                         if (variant.id) setSelectedVariantId(variant.id);
-                        setOrderNotice(null);
                       }}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
@@ -298,10 +287,11 @@ export default function UnifiedPackageSelector({
                 })}
               </div>
             </div>
-          </div>
+            </div>
+          </ScrollReveal>
 
           {/* Right Column: Live Order Summary Card */}
-          <div className="lg:col-span-5">
+          <ScrollReveal delay={250} distance={60} threshold={0.08} className="lg:col-span-5">
             <div className="sticky top-28 rounded-3xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-gradient-to-b dark:from-[#101A38] dark:to-[#0A1128] p-6 sm:p-7 shadow-xl dark:shadow-2xl shadow-slate-200/60 dark:shadow-blue-950/60 backdrop-blur-xl">
               {/* Summary Header */}
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 mb-5">
@@ -311,9 +301,6 @@ export default function UnifiedPackageSelector({
                     Ringkasan Pilihan Anda
                   </span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/20 dark:border-sky-500/30">
-                  Data Contoh Simulasi
-                </span>
               </div>
 
               {/* Selected Plan Details */}
@@ -388,36 +375,34 @@ export default function UnifiedPackageSelector({
                   </div>
                 </div>
 
-                {/* Order Simulator Feedback */}
-                {orderNotice && (
-                  <div className="p-3.5 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-200 dark:border-sky-800 text-xs text-sky-900 dark:text-sky-200 leading-relaxed animate-fadeIn">
-                    <div className="flex items-center gap-1.5 font-bold text-sky-700 dark:text-sky-300 mb-1">
-                      <CheckCircle2Icon className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-                      <span>Format Pemesanan Disiapkan:</span>
-                    </div>
-                    <p className="italic text-[11px] bg-white dark:bg-slate-900/60 p-2 rounded border border-slate-200 dark:border-slate-800">
-                      &ldquo;{orderNotice}&rdquo;
-                    </p>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 block">
-                      *Ini adalah simulasi prototipe. Pembayaran riil belum diaktifkan.
-                    </span>
-                  </div>
-                )}
 
                 {/* Order Action Button */}
                 <button
                   type="button"
-                  onClick={handleSimulateOrder}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-600 hover:brightness-110 shadow-lg shadow-blue-900/30 transition-all cursor-pointer"
+                  onClick={() => setIsOrderModalOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 transition-all cursor-pointer"
                 >
-                  <WhatsAppIcon className="w-4 h-4" />
+                  <ZapIcon className="w-4 h-4" />
                   <span>Lanjut Pemesanan Pilihan Ini</span>
+                  <ArrowRightIcon className="w-4 h-4" />
                 </button>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
+
+      {/* Product Order Modal Checkout Flow */}
+      <ProductOrderModal
+        product={currentProduct}
+        initialVariantIndex={
+          currentProduct.planVariants.findIndex((v) => v.id === activeVariant.id) !== -1
+            ? currentProduct.planVariants.findIndex((v) => v.id === activeVariant.id)
+            : 0
+        }
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+      />
     </section>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { TESTIMONIALS } from "@/data/mock-data";
+import ScrollReveal from "./ui/ScrollReveal";
 import {
   StarIcon,
   NetflixIcon,
@@ -62,11 +63,15 @@ export default function TestimonialsSection() {
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {TESTIMONIALS.map((testi) => (
-            <div
+          {TESTIMONIALS.map((testi, index) => (
+            <ScrollReveal
               key={testi.id}
-              className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700/80 transition-all shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/20"
+              delay={index * 120}
+              className="h-full flex flex-col"
             >
+              <div
+                className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700/80 transition-all shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/20 h-full"
+              >
               <div>
                 {/* Header with Star Rating and Brand Tag */}
                 <div className="flex items-center justify-between mb-4">
@@ -98,7 +103,8 @@ export default function TestimonialsSection() {
                 </div>
               </div>
             </div>
-          ))}
+          </ScrollReveal>
+        ))}
         </div>
       </div>
     </section>

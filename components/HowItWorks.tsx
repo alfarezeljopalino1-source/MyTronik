@@ -1,5 +1,6 @@
 import React from "react";
 import { ORDER_STEPS } from "@/data/mock-data";
+import ScrollReveal from "./ui/ScrollReveal";
 import { CheckCircle2Icon, ZapIcon, HeadsetIcon } from "./ui/icons";
 
 export default function HowItWorks() {
@@ -35,10 +36,14 @@ export default function HowItWorks() {
         {/* 3 Steps Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {ORDER_STEPS.map((stepItem, index) => (
-            <div
+            <ScrollReveal
               key={stepItem.step}
-              className="relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 flex flex-col justify-between group hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/20"
+              delay={index * 150}
+              className="h-full flex flex-col"
             >
+              <div
+                className="relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 flex flex-col justify-between group hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/20 h-full"
+              >
               <div>
                 {/* Step indicator header */}
                 <div className="flex items-center justify-between mb-5">
@@ -51,7 +56,7 @@ export default function HowItWorks() {
                 </div>
 
                 <div className="text-xs font-mono text-slate-500 dark:text-slate-400 mb-1">
-                  0{index + 1} // Alur Transaksi
+                  0{index + 1} • Alur Transaksi
                 </div>
 
                 <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors">
@@ -68,7 +73,8 @@ export default function HowItWorks() {
                 <span>Didampingi Sampai Aktif</span>
               </div>
             </div>
-          ))}
+          </ScrollReveal>
+        ))}
         </div>
       </div>
     </section>

@@ -26,7 +26,7 @@ export interface Product {
   tagline: string;
   shortDescription: string;
   fullDescription: string;
-  brandColor: string; // Hex color for branding accent
+  brandColor: string;
   badge?: "Terlaris" | "Promo Spesial" | "Rekomendasi" | "Hemat Maksimal" | "Termurah";
   stockStatus: string;
   rating: number;
@@ -86,4 +86,49 @@ export interface Category {
   description: string;
   iconName: string;
   productCount: number;
+}
+
+/* BLOG DATA TYPES */
+export interface BlogAuthor {
+  name: string;
+  role: string;
+  avatarUrl: string;
+}
+
+export interface BlogArticleSection {
+  heading: string;
+  body: string;
+  proTip?: string;
+}
+
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  coverImage: string;
+  category: "Tips & Trik" | "Streaming" | "Desain Grafis" | "Video Editing" | "Produktivitas";
+  date: string;
+  readTime: string;
+  author: BlogAuthor;
+  tags: string[];
+  relatedBrandKey?: BrandKey;
+  isFeatured?: boolean;
+  sections: BlogArticleSection[];
+}
+
+/* ORDER SUBMISSION & TRACKING TYPES */
+export interface OrderRecord {
+  id: string;
+  service: string;
+  brandKey: BrandKey;
+  planDuration: string;
+  priceFormatted: string;
+  samplePrice: number;
+  date: string;
+  customerWhatsApp: string;
+  customerEmail?: string;
+  paymentMethod: string;
+  status: "Diproses" | "Aktif" | "Selesai";
+  warrantyDaysRemaining: number;
 }

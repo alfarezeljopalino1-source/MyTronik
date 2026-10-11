@@ -25,10 +25,10 @@ export default function Footer() {
   ];
 
   const brandLinks = [
-    { name: "Paket Netflix 4K Ultra HD", href: "#produk", icon: <NetflixIcon className="w-3.5 h-3.5" /> },
-    { name: "Paket Spotify Premium Bebas Iklan", href: "#produk", icon: <SpotifyIcon className="w-3.5 h-3.5" /> },
-    { name: "Paket CapCut Pro Creator Suite", href: "#produk", icon: <CapCutIcon className="w-3.5 h-3.5" /> },
-    { name: "Paket Canva Pro Desain & AI", href: "#produk", icon: <CanvaIcon className="w-3.5 h-3.5" /> },
+    { name: "Paket Netflix 4K Ultra HD", href: "/produk", icon: <NetflixIcon className="w-3.5 h-3.5" /> },
+    { name: "Paket Spotify Premium Bebas Iklan", href: "/produk", icon: <SpotifyIcon className="w-3.5 h-3.5" /> },
+    { name: "Paket CapCut Pro Creator Suite", href: "/produk", icon: <CapCutIcon className="w-3.5 h-3.5" /> },
+    { name: "Paket Canva Pro Desain & AI", href: "/produk", icon: <CanvaIcon className="w-3.5 h-3.5" /> },
   ];
 
   return (
@@ -148,23 +148,28 @@ export default function Footer() {
             </h5>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li>
-                <Link href="#cara-pesan" className="hover:text-sky-400 transition-colors block">
-                  Cara Pemesanan
+                <Link href="/produk" className="hover:text-orange-400 transition-colors block">
+                  Semua Paket Produk
                 </Link>
               </li>
               <li>
-                <Link href="#perbandingan" className="hover:text-sky-400 transition-colors block">
-                  Perbandingan Gratis vs Pro
+                <Link href="/redeem" className="hover:text-orange-400 transition-colors block">
+                  Tukarkan Voucher
                 </Link>
               </li>
               <li>
-                <Link href="#testimoni" className="hover:text-sky-400 transition-colors block">
-                  Testimoni Pelanggan
+                <Link href="/riwayat" className="hover:text-orange-400 transition-colors block">
+                  Riwayat & Cek Status
                 </Link>
               </li>
               <li>
-                <Link href="#faq" className="hover:text-sky-400 transition-colors block">
-                  FAQ & Tanya Jawab
+                <Link href="/tutorial" className="hover:text-orange-400 transition-colors block">
+                  Tutorial & Panduan Aktivasi
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="hover:text-orange-400 transition-colors block">
+                  Blog & Tips Digital
                 </Link>
               </li>
             </ul>
@@ -201,7 +206,7 @@ export default function Footer() {
             <span className="font-bold text-slate-300 block mb-1">
               Pernyataan Kepatuhan Merek Dagang & Hak Cipta:
             </span>
-            Seluruh nama produk, logo, dan merek dagang (Netflix, Spotify, CapCut/Bytedance, dan Canva) yang disebutkan dalam website ini adalah milik dari pemilik hak cipta masing-masing. MyTronik adalah platform digital independen yang membantu proses pendampingan aktivasi dan pemberian garansi layanan purna jual bagi pengguna di Indonesia. Harga yang tercantum pada situs ini merupakan data contoh simulasi katalog untuk tujuan demonstrasi toko.
+            Seluruh nama produk, logo, dan merek dagang (Netflix, Spotify, CapCut/Bytedance, dan Canva) yang disebutkan dalam website ini adalah milik dari pemilik hak cipta masing-masing. MyTronik adalah platform digital independen yang membantu proses pendampingan aktivasi dan pemberian garansi layanan purna jual bagi pengguna di Indonesia. Harga yang tercantum pada website ini adalah tarif layanan pemesanan paket digital untuk pengguna di Indonesia.
           </div>
         </div>
 

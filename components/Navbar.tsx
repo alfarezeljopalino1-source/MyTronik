@@ -11,10 +11,8 @@ import {
   MoonIcon,
   MenuIcon,
   CloseIcon,
-  CheckCircle2Icon,
 } from "./ui/icons";
 import { useTheme } from "@/context/ThemeContext";
-
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme, setTheme } = useTheme();
@@ -85,7 +83,7 @@ export default function Navbar() {
             )}
           </button>
 
-          {/* Circular Notification Bell with Badge 3 matching screenshot */}
+          {/* Circular Notification Bell */}
           <div className="relative">
             <button
               type="button"
@@ -94,30 +92,28 @@ export default function Navbar() {
               aria-label="Lihat notifikasi"
             >
               <BellIcon className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-orange-500 text-white text-[10px] font-black flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-sm">
-                3
-              </span>
             </button>
 
-            {/* Notification Flyout */}
+            {/* Notification Flyout (Kosong untuk saat ini) */}
             {notifOpen && (
               <div
                 onMouseLeave={() => setNotifOpen(false)}
-                className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F172A] p-3 shadow-2xl z-50 text-xs animate-fadeIn"
+                className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F172A] p-4 shadow-2xl z-50 text-xs animate-fadeIn"
               >
-                <div className="font-bold text-slate-900 dark:text-white pb-2 mb-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="font-bold text-slate-900 dark:text-white pb-2 mb-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                   <span>Pemberitahuan</span>
-                  <span className="text-[10px] font-normal text-orange-500">3 Baru</span>
+                  <span className="text-[10px] font-normal text-slate-400">0 Baru</span>
                 </div>
-                <div className="space-y-2">
-                  <div className="p-2 rounded-xl bg-orange-500/10 border border-orange-500/20 text-slate-800 dark:text-slate-200">
-                    <span className="font-bold block text-orange-600 dark:text-orange-400">⚡ Promo Kilat Harian</span>
-                    Paket Canva 1 Hari Rp1.500 & Netflix 1 Hari Rp3.500 ready stok!
+                <div className="py-6 text-center space-y-2">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+                    <BellIcon className="w-5 h-5" />
                   </div>
-                  <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300">
-                    <span className="font-bold block text-slate-800 dark:text-slate-100">Sistem Otomatis 24/7</span>
-                    Voucher dan aktivasi hari libur tetap beroperasi normal.
-                  </div>
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                    Belum ada pemberitahuan baru
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed max-w-[200px] mx-auto">
+                    Pemberitahuan promo dan info transaksi Anda akan tampil di sini.
+                  </p>
                 </div>
               </div>
             )}
@@ -126,7 +122,7 @@ export default function Navbar() {
           {/* Orange Pill CTA Button: MULAI BELI */}
           <Link
             href="/produk"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-extrabold uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-md shadow-orange-500/30 hover:shadow-orange-500/50 transition-all cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-extrabold uppercase tracking-wider text-white bg-linear-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-md shadow-orange-500/30 hover:shadow-orange-500/50 transition-all cursor-pointer"
           >
             <ShoppingBagIcon className="w-4 h-4" />
             <span>MULAI BELI</span>
@@ -217,7 +213,7 @@ export default function Navbar() {
             <Link
               href="/produk"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-3 text-xs font-extrabold uppercase text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl shadow-md"
+              className="w-full flex items-center justify-center gap-2 py-3 text-xs font-extrabold uppercase text-white bg-linear-to-r from-orange-500 to-amber-500 rounded-xl shadow-md"
             >
               <ShoppingBagIcon className="w-4 h-4" />
               <span>MULAI BELI</span>

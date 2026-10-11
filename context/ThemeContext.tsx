@@ -14,8 +14,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedTheme = localStorage.getItem("mytronik-theme") as Theme | null;
+        if (savedTheme === "light" || savedTheme === "dark") {
+          return savedTheme;
+        }
+      } catch {
+        // fallback
+      }
+    }
+    return "dark";
+  });
+
+  const [mounted] = useState(() => typeof window !== "undefined");
 
   const applyTheme = (targetTheme: Theme) => {
     if (typeof document === "undefined") return;
@@ -48,21 +61,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    setMounted(true);
-    try {
-      const savedTheme = localStorage.getItem("mytronik-theme") as Theme | null;
-      if (savedTheme === "light" || savedTheme === "dark") {
-        setThemeState(savedTheme);
-        applyTheme(savedTheme);
-      } else {
-        // Default ke dark mode
-        setThemeState("dark");
-        applyTheme("dark");
-      }
-    } catch {
-      applyTheme("dark");
-    }
-  }, []);
+    applyTheme(theme);
+  }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

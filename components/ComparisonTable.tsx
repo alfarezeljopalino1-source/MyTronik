@@ -1,5 +1,6 @@
 import React from "react";
 import { COMPARISON_ITEMS } from "@/data/mock-data";
+import ScrollReveal from "./ui/ScrollReveal";
 import { CheckIcon, CloseIcon, SparklesIcon } from "./ui/icons";
 
 export default function ComparisonTable() {
@@ -21,7 +22,8 @@ export default function ComparisonTable() {
         </div>
 
         {/* Comparison Table Container */}
-        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 overflow-hidden shadow-xl dark:shadow-2xl backdrop-blur-xl">
+        <ScrollReveal delay={150}>
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 overflow-hidden shadow-xl dark:shadow-2xl backdrop-blur-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
@@ -71,7 +73,7 @@ export default function ComparisonTable() {
             </table>
           </div>
         </div>
-
+        </ScrollReveal>
         {/* Bottom Guarantee Banner */}
         <div className="mt-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-gradient-to-r from-blue-50 via-slate-50 to-indigo-50 dark:from-blue-900/30 dark:via-slate-900 dark:to-indigo-900/30 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
           <div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { SERVICE_FEATURES } from "@/data/mock-data";
+import ScrollReveal from "./ui/ScrollReveal";
 import {
   ZapIcon,
   ShieldCheckIcon,
@@ -42,10 +43,14 @@ export default function ServiceHighlights() {
         {/* 4 Pillars Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {SERVICE_FEATURES.map((feat, index) => (
-            <div
+            <ScrollReveal
               key={feat.id}
-              className="relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 hover:border-slate-300 dark:hover:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-all duration-300 flex flex-col justify-between group shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/20"
+              delay={index * 120}
+              className="h-full flex flex-col"
             >
+              <div
+                className="relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 hover:border-slate-300 dark:hover:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-all duration-300 flex flex-col justify-between group shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/20 h-full"
+              >
               <div>
                 <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shadow-sm">
                   {getFeatureIcon(feat.iconName)}
@@ -69,7 +74,8 @@ export default function ServiceHighlights() {
                 <span>Standar Mutu MyTronik</span>
               </div>
             </div>
-          ))}
+          </ScrollReveal>
+        ))}
         </div>
       </div>
     </section>

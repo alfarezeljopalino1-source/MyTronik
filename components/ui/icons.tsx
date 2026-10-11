@@ -16,20 +16,27 @@ export function LogoIcon({ className = "w-9 h-9", size }: IconProps) {
       className={className}
       aria-hidden="true"
     >
-      <rect width="40" height="40" rx="10" fill="url(#brand-crown-grad)" />
+      <rect width="40" height="40" rx="11" fill="url(#brand-j-grad)" />
+      {/* Top modern digital dot node */}
+      <circle cx="23" cy="9.5" r="2.2" fill="#FFFFFF" />
+      {/* Stylized Modified Letter J with sweeping curve and top wing */}
       <path
-        d="M10 26L12.5 16L17 21L20 13L23 21L27.5 16L30 26H10Z"
-        fill="#FFFFFF"
+        d="M16 14.5H23V24.5C23 27.8 20.3 30.5 16.8 30.5C13.2 30.5 11 28 11 25.5"
         stroke="#FFFFFF"
-        strokeWidth="1.2"
+        strokeWidth="3.6"
+        strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="12.5" cy="14" r="1.5" fill="#FFFFFF" />
-      <circle cx="20" cy="11.5" r="1.5" fill="#FFFFFF" />
-      <circle cx="27.5" cy="14" r="1.5" fill="#FFFFFF" />
-      <rect x="10" y="26.5" width="20" height="2" rx="1" fill="#FFFFFF" />
+      {/* Dynamic tech accent slash */}
+      <path
+        d="M23 18.5L27.5 15.5"
+        stroke="#FFFFFF"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        opacity="0.9"
+      />
       <defs>
-        <linearGradient id="brand-crown-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <linearGradient id="brand-j-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
           <stop stopColor="#FB923C" />
           <stop offset="1" stopColor="#EA580C" />
         </linearGradient>

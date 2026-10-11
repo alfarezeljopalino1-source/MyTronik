@@ -4,6 +4,8 @@ import React, { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductDetailModal from "@/components/ProductDetailModal";
+import ProductOrderModal from "@/components/ProductOrderModal";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { PRODUCTS, formatRupiah } from "@/data/mock-data";
 import { Product, BrandKey } from "@/types";
 import {
@@ -20,6 +22,11 @@ export default function ProdukPage() {
   const [selectedBrand, setSelectedBrand] = useState<BrandKey | null>(null);
   const [activeModalProduct, setActiveModalProduct] = useState<Product | null>(null);
   const [activeVariantIndex, setActiveVariantIndex] = useState(0);
+
+  // State checkout order modal
+  const [orderModalProduct, setOrderModalProduct] = useState<Product | null>(null);
+  const [orderVariantIndex, setOrderVariantIndex] = useState(0);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
   // Selected duration filter for each card: map productId -> variantIndex
   const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>({});
@@ -50,6 +57,12 @@ export default function ProdukPage() {
       return true;
     });
   }, [selectedBrand, searchQuery]);
+
+  const handleOpenOrder = (prod: Product, variantIdx: number) => {
+    setOrderModalProduct(prod);
+    setOrderVariantIndex(variantIdx);
+    setIsOrderModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090E1F] text-slate-900 dark:text-slate-100 transition-colors duration-250">
@@ -116,16 +129,21 @@ export default function ProdukPage() {
           {/* Product Cards Grid matching Screenshot #2 Card Style */}
           {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProducts.map((product) => {
+              {filteredProducts.map((product, index) => {
                 const currentVariantIdx = selectedVariants[product.id] ?? 0;
                 const activeVariant =
                   product.planVariants[currentVariantIdx] || product.planVariants[0];
 
                 return (
-                  <div
+                  <ScrollReveal
                     key={product.id}
-                    className="group relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 flex flex-col justify-between hover:border-orange-500/50 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 shadow-lg shadow-slate-200/50 dark:shadow-black/30"
+                    delay={index * 130}
+                    distance={55}
+                    className="h-full flex flex-col"
                   >
+                    <div
+                      className="group relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 flex flex-col justify-between hover:border-orange-500/50 hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-1.5 transition-all duration-300 shadow-lg shadow-slate-200/50 dark:shadow-black/30 h-full"
+                    >
                     <div>
                       {/* Top Row: Peach circular container with Box icon + BEST SELLER badge matching screenshot */}
                       <div className="flex items-center justify-between mb-6">
@@ -224,20 +242,30 @@ export default function ProdukPage() {
                         )}
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveModalProduct(product);
-                          setActiveVariantIndex(currentVariantIdx);
-                        }}
-                        className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-md shadow-orange-500/20 hover:shadow-orange-500/40 transition-all cursor-pointer"
-                      >
-                        <span>PILIH PAKET</span>
-                        <ArrowRightIcon className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveModalProduct(product);
+                            setActiveVariantIndex(currentVariantIdx);
+                          }}
+                          className="px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                        >
+                          Detail
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenOrder(product, currentVariantIdx)}
+                          className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-md shadow-orange-500/20 hover:shadow-orange-500/40 transition-all cursor-pointer"
+                        >
+                          <span>BELI</span>
+                          <ArrowRightIcon className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                );
+                </ScrollReveal>
+              );
               })}
             </div>
           ) : (
@@ -251,7 +279,7 @@ export default function ProdukPage() {
                   setSearchQuery("");
                   setSelectedBrand(null);
                 }}
-                className="mt-3 px-4 py-2 rounded-full text-xs font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/40 border border-orange-300 dark:border-orange-800"
+                className="mt-3 px-4 py-2 rounded-full text-xs font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/40 border border-orange-300 dark:border-orange-800 cursor-pointer"
               >
                 Tampilkan Semua Produk
               </button>
@@ -260,7 +288,7 @@ export default function ProdukPage() {
         </div>
       </main>
 
-      {/* Floating WhatsApp Widget matching screenshot */}
+      {/* Floating WhatsApp Widget */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 group">
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 text-[11px] font-black uppercase tracking-wider text-slate-800 dark:text-slate-100 shadow-xl border border-slate-200 dark:border-slate-800">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
@@ -283,6 +311,18 @@ export default function ProdukPage() {
         product={activeModalProduct}
         initialVariantIndex={activeVariantIndex}
         onClose={() => setActiveModalProduct(null)}
+        onOrderNow={(prod, variantIdx) => {
+          setActiveModalProduct(null);
+          handleOpenOrder(prod, variantIdx);
+        }}
+      />
+
+      {/* Product Order Modal (Checkout Flow) */}
+      <ProductOrderModal
+        product={orderModalProduct}
+        initialVariantIndex={orderVariantIndex}
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
       />
 
       {/* 3. Shared Footer */}

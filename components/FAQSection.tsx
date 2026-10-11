@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { FAQ_ITEMS } from "@/data/mock-data";
+import ScrollReveal from "./ui/ScrollReveal";
 import { ChevronDownIcon, NetflixIcon, SpotifyIcon, CapCutIcon, CanvaIcon } from "./ui/icons";
 
 export default function FAQSection() {
@@ -61,8 +62,9 @@ export default function FAQSection() {
         </div>
 
         {/* Accordion List */}
-        <div className="space-y-3.5">
-          {filteredFaqs.map((item) => {
+        <ScrollReveal delay={100}>
+          <div className="space-y-3.5">
+            {filteredFaqs.map((item) => {
             const isOpen = openId === item.id;
             return (
               <div
@@ -103,8 +105,9 @@ export default function FAQSection() {
                 )}
               </div>
             );
-          })}
-        </div>
+            })}
+          </div>
+        </ScrollReveal>
 
         {/* Helpdesk Callout */}
         <div className="mt-10 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-6 text-center shadow-sm">

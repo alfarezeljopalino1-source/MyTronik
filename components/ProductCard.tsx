@@ -72,7 +72,7 @@ export default function ProductCard({
 
   return (
     <div
-      className={`group relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 overflow-hidden flex flex-col justify-between transition-all duration-300 shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/40 ${brandMeta.borderHover}`}
+      className={`group relative rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 overflow-hidden flex flex-col justify-between hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 shadow-md dark:shadow-xl shadow-slate-200/50 dark:shadow-black/40 ${brandMeta.borderHover}`}
     >
       {/* Top Banner Media */}
       <div className="relative h-48 w-full overflow-hidden bg-slate-800">
@@ -194,7 +194,7 @@ export default function ProductCard({
               </div>
             )}
             <span className="text-[9px] text-slate-500 dark:text-slate-400 block -mt-0.5">
-              *Data contoh ({activeVariant.duration})
+              *Paket {activeVariant.duration}
             </span>
           </div>
 
