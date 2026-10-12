@@ -18,9 +18,9 @@ import { OrderRecord } from "@/types";
 export default function RiwayatPage() {
   const [searchInvoice, setSearchInvoice] = useState("");
   const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
-
   const syncOrders = useCallback(async () => {
     try {
       const res = await fetch("/api/orders");
@@ -180,84 +180,195 @@ export default function RiwayatPage() {
                 </button>
               </div>
 
-              {filtered.map((order) => (
-                <div
-                  key={order.id}
-                  className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-5 sm:p-6 shadow-md shadow-slate-200/50 dark:shadow-black/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-bold text-orange-500">
-                        {order.id}
-                      </span>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          order.status === "Aktif" || order.status === "Selesai"
-                            ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
-                            : order.status === "Menunggu Konfirmasi"
-                            ? "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </div>
+              {filtered.map((order) => {
+                const raw = order.accountCredentials || "";
+                let voucherCode = order.voucherCode || "";
+                let accountEmail = order.accountEmail || "";
+                let accountPassword = order.accountPassword || "";
+                let accountProfile = order.accountProfile || "";
+                let accountPin = order.accountPin || "";
+                let autoLoginUrl = order.autoLoginUrl || "";
+                let noteText = "";
 
-                    <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
-                      {order.service} • {order.planDuration}
-                    </h3>
+                if (raw.startsWith("{") && raw.endsWith("}")) {
+                  try {
+                    const parsed = JSON.parse(raw);
+                    if (!voucherCode && parsed.voucherCode) voucherCode = parsed.voucherCode;
+                    if (!accountEmail && parsed.accountEmail) accountEmail = parsed.accountEmail;
+                    if (!accountPassword && parsed.accountPassword) accountPassword = parsed.accountPassword;
+                    if (!accountProfile && parsed.accountProfile) accountProfile = parsed.accountProfile;
+                    if (!accountPin && parsed.accountPin) accountPin = parsed.accountPin;
+                    if (!autoLoginUrl && parsed.autoLoginUrl) autoLoginUrl = parsed.autoLoginUrl;
+                    if (parsed.text && typeof parsed.text === "string") noteText = parsed.text;
+                  } catch {
+                    noteText = raw;
+                  }
+                } else if (raw) {
+                  noteText = raw;
+                }
 
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Tanggal: {order.date} • Metode: {order.paymentMethod} • Biaya:{" "}
-                      <strong className="text-slate-900 dark:text-slate-100">
-                        {order.priceFormatted}
-                      </strong>
-                    </p>
+                const isOrderActive = order.status === "Aktif" || order.status === "Selesai";
+                const hasCredentials = Boolean(
+                  voucherCode || accountEmail || accountPassword || accountProfile || accountPin || autoLoginUrl || noteText
+                );
 
-                    {order.customerWhatsApp && (
-                      <p className="text-[11px] text-slate-400 font-mono">
-                        Penerima WA: {order.customerWhatsApp}
-                      </p>
-                    )}
-                    {order.accountCredentials && (
-                      <div className="mt-2.5 p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs">
-                        <span className="font-bold text-emerald-700 dark:text-emerald-300 block mb-1">
-                          Detail Akses Akun Anda:
+                return (
+                  <div
+                    key={order.id}
+                    className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-5 sm:p-6 shadow-md shadow-slate-200/50 dark:shadow-black/20 flex flex-col md:flex-row md:items-start justify-between gap-5 transition-all hover:border-slate-300 dark:hover:border-slate-700"
+                  >
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-mono font-bold text-orange-500 bg-orange-500/10 px-2.5 py-0.5 rounded-lg border border-orange-500/20">
+                          {order.id}
                         </span>
-                        <p className="font-mono text-[11px] text-slate-800 dark:text-slate-200 select-all bg-white dark:bg-slate-900 p-2 rounded-xl border border-emerald-200/50 dark:border-emerald-800/50">
-                          {order.accountCredentials}
-                        </p>
+                        <span
+                          className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                            isOrderActive
+                              ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
+                              : order.status === "Menunggu Konfirmasi"
+                              ? "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                          }`}
+                        >
+                          {order.status}
+                        </span>
                       </div>
-                    )}
-                  </div>
 
-                  <div className="flex flex-col sm:items-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800 text-xs">
-                    <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
-                      <CheckCircle2Icon className="w-4 h-4 shrink-0" />
-                      <span>Garansi: {order.warrantyDaysRemaining} Hari</span>
+                      <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-snug">
+                        {order.service} • {order.planDuration}
+                      </h3>
+
+                      <p className="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap gap-x-2 gap-y-1">
+                        <span>Tanggal: {order.date}</span>
+                        <span>•</span>
+                        <span>Metode: {order.paymentMethod}</span>
+                        <span>•</span>
+                        <span>
+                          Biaya:{" "}
+                          <strong className="text-slate-900 dark:text-slate-100">
+                            {order.priceFormatted}
+                          </strong>
+                        </span>
+                      </p>
+
+                      {order.customerWhatsApp && (
+                        <p className="text-[11px] text-slate-400 font-mono">
+                          Penerima WA: {order.customerWhatsApp}
+                        </p>
+                      )}
+
+                      {/* Detail Akses Akun: Tampilan Terstruktur dan Rapi (Bukan JSON Mentah) */}
+                      {isOrderActive && hasCredentials && (
+                        <div className="mt-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-3 animate-fadeIn">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <span className="font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 text-xs">
+                              <CheckCircle2Icon className="w-4 h-4 text-emerald-500 shrink-0" />
+                              <span>Detail Akses Akun Anda:</span>
+                            </span>
+                            {voucherCode && (
+                              <button
+                                type="button"
+                                 onClick={() => {
+                                  navigator.clipboard.writeText(voucherCode);
+                                  setCopiedId(voucherCode);
+                                  setTimeout(() => setCopiedId(null), 2000);
+                                 }}
+                                className="font-mono text-[11px] font-black uppercase text-emerald-700 dark:text-emerald-300 bg-white dark:bg-slate-900 border border-emerald-500/30 px-2.5 py-1 rounded-xl flex items-center gap-1.5 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                title="Klik untuk menyalin kode voucher"
+                              >
+                                <span>{voucherCode}</span>
+                                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-sans font-bold">
+                                  {copiedId === voucherCode ? "✓ Tersalin" : "📋 Salin"}
+                                </span>
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
+                            {accountEmail && (
+                              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/20">
+                                <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">
+                                  Email Akun:
+                                </span>
+                                <span className="text-slate-900 dark:text-white font-bold select-all break-all">
+                                  {accountEmail}
+                                </span>
+                              </div>
+                            )}
+                            {accountPassword && (
+                              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/20">
+                                <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">
+                                  Password:
+                                </span>
+                                <span className="text-slate-900 dark:text-white font-bold select-all break-all">
+                                  {accountPassword}
+                                </span>
+                              </div>
+                            )}
+                            {accountProfile && (
+                              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/20">
+                                <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">
+                                  Profil:
+                                </span>
+                                <span className="text-slate-900 dark:text-white font-bold">
+                                  {accountProfile}
+                                </span>
+                              </div>
+                            )}
+                            {accountPin && (
+                              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-500/20">
+                                <span className="text-[10px] text-slate-400 block font-sans uppercase font-bold">
+                                  PIN Profil:
+                                </span>
+                                <span className="text-slate-900 dark:text-white font-bold select-all">
+                                  {accountPin}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {noteText && (
+                            <p className="font-sans text-xs text-slate-700 dark:text-slate-300 bg-white/70 dark:bg-slate-900/70 p-2.5 rounded-xl border border-emerald-500/20 break-words leading-relaxed">
+                              {noteText}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <Link
-                      href={`/redeem?code=${order.voucherCode || order.id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-sm transition-all"
-                    >
-                      <ZapIcon className="w-3.5 h-3.5" />
-                      <span>Buka Akses Akun</span>
-                    </Link>
 
-                    <a
-                      href={`https://wa.me/6285382191181?text=${encodeURIComponent(
-                        `Halo CS MyTronik, saya ingin menanyakan status pesanan saya dengan nomor invoice: ${order.id} (${order.service} ${order.planDuration}).`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all cursor-pointer"
-                    >
-                      <WhatsAppIcon className="w-3.5 h-3.5" />
-                      <span>Bantuan CS</span>
-                    </a>
+                    {/* Tombol Aksi Kanan: Rapi, Terkunci Lebar, Tidak Pernah Terjepit Keluar Card */}
+                    <div className="shrink-0 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-start gap-2.5 pt-3 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800 text-xs">
+                      <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold whitespace-nowrap">
+                        <CheckCircle2Icon className="w-4 h-4 shrink-0" />
+                        <span>Garansi: {order.warrantyDaysRemaining} Hari</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-wrap md:flex-col w-full md:w-auto">
+                        <Link
+                          href={`/redeem?code=${voucherCode || order.voucherCode || order.id}`}
+                          className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-black text-white bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-md shadow-orange-500/25 transition-all whitespace-nowrap cursor-pointer"
+                        >
+                          <ZapIcon className="w-3.5 h-3.5 shrink-0" />
+                          <span>Buka Akses Akun</span>
+                        </Link>
+
+                        <a
+                          href={`https://wa.me/6285382191181?text=${encodeURIComponent(
+                            `Halo CS MyTronik, saya ingin menanyakan status pesanan saya dengan nomor invoice: ${order.id} (${order.service} ${order.planDuration}).`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all whitespace-nowrap cursor-pointer"
+                        >
+                          <WhatsAppIcon className="w-3.5 h-3.5 shrink-0" />
+                          <span>Bantuan CS</span>
+                        </a>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

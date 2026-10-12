@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "INV-MYT-93986",
+    "service": "Paket Spotify Premium Bebas Iklan",
+    "brandKey": "spotify",
+    "planDuration": "1 Hari (24 Jam)",
+    "priceFormatted": "Rp 2.000",
+    "samplePrice": 2000,
+    "date": "12 Okt 2026",
+    "customerWhatsApp": "081243344642",
+    "customerEmail": "apitzraditya@gmail.com",
+    "paymentMethod": "QRIS Instan (GoPay, OVO, DANA, ShopeePay)",
+    "status": "Aktif",
+    "warrantyDaysRemaining": 7,
+    "confirmedAt": "12/10/2026, 13.16.50",
+    "voucherCode": "MYT-SPO-3986"
+  }
+]

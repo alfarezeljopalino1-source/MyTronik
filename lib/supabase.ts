@@ -61,7 +61,12 @@ export function mapRowToOrder(row: Record<string, unknown>): OrderRecord {
     status: (row.status as OrderStatus) || "Menunggu Konfirmasi",
     warrantyDaysRemaining: Number(row.warranty_days || 30),
     confirmedAt: row.confirmed_at ? String(row.confirmed_at) : undefined,
-    accountCredentials: (unpacked.text as string) || rawCreds || undefined,
+    accountCredentials:
+      typeof unpacked.text === "string" && unpacked.text.trim().length > 0
+        ? unpacked.text
+        : !rawCreds.startsWith("{") && rawCreds.trim().length > 0
+        ? rawCreds
+        : undefined,
     voucherCode: (row.voucher_code as string) || (unpacked.voucherCode as string) || undefined,
     accountEmail: (row.account_email as string) || (unpacked.accountEmail as string) || undefined,
     accountPassword: (row.account_password as string) || (unpacked.accountPassword as string) || undefined,

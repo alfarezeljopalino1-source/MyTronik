@@ -95,6 +95,8 @@ export default function ProductOrderModal({
           if (data.success && Array.isArray(data.orders)) {
             const matched = data.orders.find((o: OrderRecord) => o.id === generatedInvoice);
             if (matched && (matched.status === "Aktif" || matched.status === "Selesai")) {
+              window.dispatchEvent(new Event("storage"));
+              window.dispatchEvent(new CustomEvent("mytronik-order-updated", { detail: matched }));
               setStep(4);
             }
           }
@@ -183,6 +185,8 @@ export default function ProductOrderModal({
 
       orderList.unshift(newOrder);
       localStorage.setItem("mytronik-orders", JSON.stringify(orderList));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("mytronik-order-updated", { detail: newOrder }));
 
       // Kirim pesanan ke server API agar admin dapat mengonfirmasi pesanan secara langsung
       fetch("/api/orders", {
@@ -242,10 +246,15 @@ export default function ProductOrderModal({
           if (idx !== -1) {
             list[idx].status = "Aktif";
             localStorage.setItem("mytronik-orders", JSON.stringify(list));
+            window.dispatchEvent(new Event("storage"));
+            window.dispatchEvent(
+              new CustomEvent("mytronik-order-updated", {
+                detail: { id: generatedInvoice, status: "Aktif" },
+              })
+            );
           }
         }
       } catch {
-        // Ignored
       }
     } catch {
       // Ignored
