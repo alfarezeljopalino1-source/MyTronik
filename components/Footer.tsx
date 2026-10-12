@@ -13,15 +13,14 @@ import {
 
 export default function Footer() {
   const paymentMethods = [
-    { name: "QRIS Instan" },
-    { name: "BCA Virtual Account" },
-    { name: "Mandiri VA" },
-    { name: "BRI VA" },
-    { name: "BNI VA" },
+    { name: "QRIS Nasional" },
     { name: "GoPay" },
     { name: "OVO" },
     { name: "DANA" },
     { name: "ShopeePay" },
+    { name: "BCA Mobile" },
+    { name: "Livin by Mandiri" },
+    { name: "BRImo" },
   ];
 
   const brandLinks = [

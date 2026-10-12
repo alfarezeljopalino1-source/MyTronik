@@ -43,7 +43,7 @@ export default function ProductOrderModal({
   const [customerWhatsApp, setCustomerWhatsApp] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("QRIS Instan (GoPay, OVO, DANA, ShopeePay)");
+  const [paymentMethod, setPaymentMethod] = useState("QRIS Instan (Semua E-Wallet & m-Banking)");
   const [generatedInvoice, setGeneratedInvoice] = useState("INV-MYT-84291");
   const [generatedVoucher, setGeneratedVoucher] = useState("MYT-NET-9821");
   const [voucherCopied, setVoucherCopied] = useState(false);
@@ -112,10 +112,11 @@ export default function ProductOrderModal({
     product.planVariants[selectedVariantIdx] || product.planVariants[0];
 
   const paymentOptions = [
-    { id: "qris", name: "QRIS Instan (GoPay, OVO, DANA, ShopeePay)", badge: "Paling Cepat" },
-    { id: "bca", name: "BCA Virtual Account", badge: "Verifikasi Otomatis" },
-    { id: "mandiri", name: "Mandiri Virtual Account", badge: "24 Jam" },
-    { id: "bri", name: "BRI & BNI Virtual Account", badge: "24 Jam" },
+    {
+      id: "qris",
+      name: "QRIS Instan (Semua E-Wallet & m-Banking)",
+      badge: "Satu-satunya Metode • Bebas Biaya Admin",
+    },
   ];
 
   const handleNextToStep2 = () => {
@@ -505,9 +506,9 @@ export default function ProductOrderModal({
               </button>
               <button
                 type="submit"
-                className="w-2/3 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/25 transition-all flex items-center justify-center gap-2"
+                className="w-2/3 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Pilih Metode Pembayaran</span>
+                <span>Lanjut ke Pembayaran QRIS</span>
                 <ArrowRightIcon className="w-4 h-4" />
               </button>
             </div>
@@ -519,45 +520,30 @@ export default function ProductOrderModal({
           <div className="p-6 sm:p-8 space-y-6">
             <div>
               <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                Pilih Metode Pembayaran
+                Metode Pembayaran Resmi
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Pilih metode pembayaran favorit Anda di bawah ini:
+                Semua transaksi di MyTronik diproses instan 24 jam melalui QRIS:
               </p>
             </div>
 
-            <div className="space-y-2.5">
-              {paymentOptions.map((opt) => {
-                const isSelected = paymentMethod === opt.name;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setPaymentMethod(opt.name)}
-                    className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
-                      isSelected
-                        ? "bg-orange-50 dark:bg-orange-950/30 border-orange-500 ring-2 ring-orange-500/30 shadow-md"
-                        : "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                          isSelected ? "border-orange-500 bg-orange-500" : "border-slate-400"
-                        }`}
-                      >
-                        {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                      </span>
-                      <span className="text-xs font-bold text-slate-900 dark:text-white">
-                        {opt.name}
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md bg-slate-200/60 dark:bg-slate-800">
-                      {opt.badge}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="p-4 sm:p-5 rounded-2xl bg-orange-50/70 dark:bg-orange-950/25 border-2 border-orange-500 ring-2 ring-orange-500/20 shadow-md space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center text-white">
+                    <CheckIcon className="w-3 h-3 stroke-[3]" />
+                  </span>
+                  <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                    QRIS Instan (Semua Bank & Dompet Digital)
+                  </span>
+                </div>
+                <span className="text-[10px] font-black uppercase text-orange-600 dark:text-orange-400 px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30">
+                  Otomatis 24 Jam
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pl-7">
+                Mendukung <strong>BCA Mobile, Livin by Mandiri, BRImo, BNI, GoPay, OVO, DANA, ShopeePay</strong> tanpa biaya admin.
+              </p>
             </div>
 
             {/* Order Summary Confirmation */}
@@ -595,7 +581,7 @@ export default function ProductOrderModal({
                 onClick={handleConfirmOrder}
                 className="w-2/3 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-orange-500 via-orange-600 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Konfirmasi Pemesanan</span>
+                <span>Buka Kode QRIS</span>
                 <CheckIcon className="w-4 h-4" />
               </button>
             </div>
@@ -683,10 +669,10 @@ export default function ProductOrderModal({
 
               <button
                 type="button"
-                onClick={() => setStep(3)}
+                onClick={() => setStep(2)}
                 className="w-full py-2.5 text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors cursor-pointer"
               >
-                ← Ganti Metode Pembayaran
+                ← Ubah Data Pemesanan
               </button>
             </div>
 
