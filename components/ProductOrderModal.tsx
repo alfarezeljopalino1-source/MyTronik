@@ -333,7 +333,6 @@ export default function ProductOrderModal({
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Contoh: Alfarezel Jopalino"
                   className="w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 focus:border-orange-500 focus:outline-none"
                 />
               </div>
@@ -349,7 +348,6 @@ export default function ProductOrderModal({
                     setCustomerWhatsApp(e.target.value);
                     if (formError) setFormError(null);
                   }}
-                  placeholder="Contoh: 085382191181 atau 6285382191181"
                   className={`w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white border transition-all focus:outline-none ${
                     formError
                       ? "border-orange-500 ring-2 ring-orange-500/20 bg-orange-50/20 dark:bg-orange-950/20"
@@ -378,7 +376,6 @@ export default function ProductOrderModal({
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  placeholder="email@anda.com (Opsional / untuk invite)"
                   className="w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-xs sm:text-sm font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 focus:border-orange-500 focus:outline-none"
                 />
               </div>
@@ -391,7 +388,6 @@ export default function ProductOrderModal({
                   type="text"
                   value={customerNotes}
                   onChange={(e) => setCustomerNotes(e.target.value)}
-                  placeholder="Contoh: Tolong kirim profil PIN tanggal lahir"
                   className="w-full h-12 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 focus:border-orange-500 focus:outline-none"
                 />
               </div>

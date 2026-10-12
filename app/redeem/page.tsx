@@ -282,7 +282,6 @@ function RedeemContent() {
                       setInputCode(e.target.value);
                       if (errorMessage) setErrorMessage(null);
                     }}
-                    placeholder="Contoh: MYT-NET-9821 atau MYTRONIK-PRO"
                     className="w-full h-13 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800 text-sm font-mono font-bold tracking-wider text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 focus:border-orange-500 focus:outline-none uppercase"
                   />
                 </div>
