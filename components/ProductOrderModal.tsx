@@ -77,6 +77,34 @@ export default function ProductOrderModal({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
+  useEffect(() => {
+    if (step === "qris") {
+      const timer = setInterval(() => {
+        setQrisCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [step]);
+
+  useEffect(() => {
+    if (step === "qris") {
+      const poll = setInterval(async () => {
+        try {
+          const res = await fetch("/api/orders");
+          const data = await res.json();
+          if (data.success && Array.isArray(data.orders)) {
+            const matched = data.orders.find((o: OrderRecord) => o.id === generatedInvoice);
+            if (matched && (matched.status === "Aktif" || matched.status === "Selesai")) {
+              setStep(4);
+            }
+          }
+        } catch {
+          // Ignored
+        }
+      }, 3000);
+      return () => clearInterval(poll);
+    }
+  }, [step, generatedInvoice]);
 
   if (!isOpen || !product) return null;
 
@@ -224,34 +252,6 @@ export default function ProductOrderModal({
     setStep(4);
   };
 
-  useEffect(() => {
-    if (step === "qris") {
-      const timer = setInterval(() => {
-        setQrisCountdown((prev) => (prev > 0 ? prev - 1 : 0));
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [step]);
-
-  useEffect(() => {
-    if (step === "qris") {
-      const poll = setInterval(async () => {
-        try {
-          const res = await fetch("/api/orders");
-          const data = await res.json();
-          if (data.success && Array.isArray(data.orders)) {
-            const matched = data.orders.find((o: OrderRecord) => o.id === generatedInvoice);
-            if (matched && (matched.status === "Aktif" || matched.status === "Selesai")) {
-              setStep(4);
-            }
-          }
-        } catch {
-          // Ignored
-        }
-      }, 3000);
-      return () => clearInterval(poll);
-    }
-  }, [step, generatedInvoice]);
   const whatsappMessage = encodeURIComponent(
     `Halo CS MyTronik, saya telah membuat pesanan digital:\n` +
       `• No. Invoice: ${generatedInvoice}\n` +
