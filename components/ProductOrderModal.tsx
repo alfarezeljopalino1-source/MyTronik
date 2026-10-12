@@ -13,6 +13,7 @@ import {
   ArrowRightIcon,
   CheckCircle2Icon,
   AlertCircleIcon,
+  ClockIcon,
 } from "./ui/icons";
 
 interface ProductOrderModalProps {
@@ -28,7 +29,15 @@ export default function ProductOrderModal({
   isOpen,
   onClose,
 }: ProductOrderModalProps) {
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | "qris" | 4>(1);
+  const [qrisData, setQrisData] = useState<{
+    qrImageUrl: string;
+    grossAmount: number;
+    expiryTime: string;
+    isMock: boolean;
+  } | null>(null);
+  const [qrisCountdown, setQrisCountdown] = useState(15 * 60);
+  const [isVerifyingQris, setIsVerifyingQris] = useState(false);
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(initialVariantIndex);
   const [customerName, setCustomerName] = useState("");
   const [customerWhatsApp, setCustomerWhatsApp] = useState("");
@@ -103,7 +112,7 @@ export default function ProductOrderModal({
   };
 
   const handleConfirmOrder = () => {
-    // Simpan pesanan ke localStorage agar tersinkronisasi dengan halaman /riwayat
+    const cName = customerName.trim() || "Pelanggan MyTronik";
     try {
       const existing = localStorage.getItem("mytronik-orders");
       const orderList: OrderRecord[] = existing ? JSON.parse(existing) : [];
@@ -117,7 +126,6 @@ export default function ProductOrderModal({
       const vCode =
         generatedVoucher ||
         `MYT-${product.brandKey.toUpperCase().slice(0, 3)}-${Math.floor(1000 + Math.random() * 9000)}`;
-      const cName = customerName.trim() || "Pelanggan MyTronik";
       const randomAccId = Math.random().toString(36).substring(2, 8);
       const sampleAutoLogin = `https://paytronik.digitalpremium.id/1/${randomAccId}`;
 
@@ -158,10 +166,92 @@ export default function ProductOrderModal({
     } catch {
       // Ignored if storage restricted
     }
+    if (paymentMethod.includes("QRIS")) {
+      setStep("qris");
+      setIsVerifyingQris(true);
+      setQrisCountdown(15 * 60);
+      fetch("/api/payment/qris", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: generatedInvoice,
+          amount: currentVariant.samplePrice,
+          customerName: cName,
+          customerPhone: customerWhatsApp.trim(),
+          customerEmail: customerEmail.trim() || undefined,
+          productName: `${product.name} - ${currentVariant.duration}`,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.qris) {
+            setQrisData(data.qris);
+          }
+        })
+        .finally(() => setIsVerifyingQris(false));
+    } else {
+      setStep(4);
+    }
+  };
 
+  const handleSimulatePaymentSuccess = async () => {
+    try {
+      await fetch("/api/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: generatedInvoice,
+          status: "Aktif",
+        }),
+      });
+
+      try {
+        const existing = localStorage.getItem("mytronik-orders");
+        if (existing) {
+          const list: OrderRecord[] = JSON.parse(existing);
+          const idx = list.findIndex((o) => o.id === generatedInvoice);
+          if (idx !== -1) {
+            list[idx].status = "Aktif";
+            localStorage.setItem("mytronik-orders", JSON.stringify(list));
+          }
+        }
+      } catch {
+        // Ignored
+      }
+    } catch {
+      // Ignored
+    }
     setStep(4);
   };
 
+  useEffect(() => {
+    if (step === "qris") {
+      const timer = setInterval(() => {
+        setQrisCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [step]);
+
+  useEffect(() => {
+    if (step === "qris") {
+      const poll = setInterval(async () => {
+        try {
+          const res = await fetch("/api/orders");
+          const data = await res.json();
+          if (data.success && Array.isArray(data.orders)) {
+            const matched = data.orders.find((o: OrderRecord) => o.id === generatedInvoice);
+            if (matched && (matched.status === "Aktif" || matched.status === "Selesai")) {
+              setStep(4);
+            }
+          }
+        } catch {
+          // Ignored
+        }
+      }, 3000);
+      return () => clearInterval(poll);
+    }
+  }, [step, generatedInvoice]);
   const whatsappMessage = encodeURIComponent(
     `Halo CS MyTronik, saya telah membuat pesanan digital:\n` +
       `• No. Invoice: ${generatedInvoice}\n` +
@@ -189,34 +279,44 @@ export default function ProductOrderModal({
 
         {/* Modal Stepper Header with generous right padding to prevent collision */}
         <div className="p-6 pr-20 sm:pr-24 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60 rounded-t-3xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-4">
-            <span className="text-xs font-black uppercase tracking-wider text-orange-500 flex items-center gap-1.5 truncate">
-              <ZapIcon className="w-4 h-4 shrink-0" />
-              <span className="truncate">Sistem Pemesanan MyTronik</span>
-            </span>
-            <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 shrink-0">
-              {step <= 3 ? `Langkah ${step} dari 3` : "Pesanan Selesai"}
-            </span>
-          </div>
-
           {/* Stepper Progress Bar */}
-          <div className="grid grid-cols-3 gap-2">
-            <div
-              className={`h-1.5 rounded-full transition-all ${
-                step >= 1 ? "bg-orange-500" : "bg-slate-200 dark:bg-slate-800"
-              }`}
-            />
-            <div
-              className={`h-1.5 rounded-full transition-all ${
-                step >= 2 ? "bg-orange-500" : "bg-slate-200 dark:bg-slate-800"
-              }`}
-            />
-            <div
-              className={`h-1.5 rounded-full transition-all ${
-                step >= 3 ? "bg-orange-500" : "bg-slate-200 dark:bg-slate-800"
-              }`}
-            />
-          </div>
+          {(() => {
+            const numericStep = typeof step === "number" ? step : 3;
+            return (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-4">
+                  <span className="text-xs font-black uppercase tracking-wider text-orange-500 flex items-center gap-1.5 truncate">
+                    <ZapIcon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">Sistem Pemesanan MyTronik</span>
+                  </span>
+                  <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 shrink-0">
+                    {step === "qris"
+                      ? "Pembayaran QRIS"
+                      : typeof step === "number" && step <= 3
+                      ? `Langkah ${step} dari 3`
+                      : "Pesanan Selesai"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div
+                    className={`h-1.5 rounded-full transition-all ${
+                      numericStep >= 1 ? "bg-orange-500" : "bg-slate-200 dark:bg-slate-800"
+                    }`}
+                  />
+                  <div
+                    className={`h-1.5 rounded-full transition-all ${
+                      numericStep >= 2 ? "bg-orange-500" : "bg-slate-200 dark:bg-slate-800"
+                    }`}
+                  />
+                  <div
+                    className={`h-1.5 rounded-full transition-all ${
+                      numericStep >= 3 ? "bg-orange-500" : "bg-slate-200 dark:bg-slate-800"
+                    }`}
+                  />
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* STEP 1: Konfigurasi Paket & Durasi */}
@@ -499,6 +599,100 @@ export default function ProductOrderModal({
                 <CheckIcon className="w-4 h-4" />
               </button>
             </div>
+          </div>
+        )}
+
+        {/* STEP QRIS: Layar Scan QR Code Dinamis Otomatis */}
+        {step === "qris" && (
+          <div className="p-6 sm:p-8 space-y-5 animate-fadeIn text-center">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-[10px] font-black uppercase tracking-wider">
+                <span>Pembayaran QRIS Otomatis</span>
+              </div>
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                Scan QRIS untuk Menyelesaikan Pesanan
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                Buka aplikasi m-Banking atau e-Wallet favorit Anda, lalu scan QR code di bawah ini:
+              </p>
+            </div>
+
+            {/* Kotak QR Code */}
+            <div className="max-w-xs mx-auto p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-3">
+              {/* Badge Acquirer */}
+              <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span>QRIS Standar BI</span>
+                <span className="text-orange-500 font-mono font-black">{generatedInvoice}</span>
+              </div>
+
+              {/* QR Image Frame */}
+              <div className="relative aspect-square w-full rounded-2xl bg-white p-2.5 flex items-center justify-center border border-slate-100 dark:border-slate-800 shadow-inner">
+                {isVerifyingQris ? (
+                  <div className="text-xs text-slate-400 font-bold animate-pulse">
+                    Membuat kode QRIS...
+                  </div>
+                ) : (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={
+                      qrisData?.qrImageUrl ||
+                      `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=MYTRONIK-${generatedInvoice}&margin=10`
+                    }
+                    alt="QRIS Payment Code"
+                    className="w-full h-full object-contain rounded-xl"
+                  />
+                )}
+              </div>
+
+              {/* Nominal Tagihan */}
+              <div className="pt-1">
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                  Total Tagihan Tepat:
+                </span>
+                <div className="text-2xl font-black font-mono text-slate-900 dark:text-white tracking-tight">
+                  {formatRupiah(currentVariant.samplePrice)}
+                </div>
+              </div>
+
+              {/* Timer Countdown */}
+              <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-xs font-bold text-amber-700 dark:text-amber-400 flex items-center justify-center gap-1.5">
+                <ClockIcon className="w-3.5 h-3.5" />
+                <span>
+                  Sisa Waktu: {Math.floor(qrisCountdown / 60)}:
+                  {String(qrisCountdown % 60).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
+
+            {/* Indikator Status Menunggu Pembayaran */}
+            <div className="flex items-center justify-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+              <span>Menunggu pembayaran masuk... (Sistem memeriksa otomatis)</span>
+            </div>
+
+            {/* Tombol Aksi & Uji Coba */}
+            <div className="space-y-2.5 max-w-sm mx-auto pt-1">
+              <button
+                type="button"
+                onClick={handleSimulatePaymentSuccess}
+                className="w-full py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider text-white bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:to-teal-600 shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <CheckCircle2Icon className="w-4 h-4" />
+                <span>⚡ Simulasikan Pembayaran Berhasil</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className="w-full py-2.5 text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors cursor-pointer"
+              >
+                ← Ganti Metode Pembayaran
+              </button>
+            </div>
+
+            <p className="text-[11px] text-slate-400">
+              Dukung seluruh m-Banking (BCA, Mandiri, BRI, BNI, Jago, Seabank) dan e-Wallet (GoPay, OVO, DANA, ShopeePay).
+            </p>
           </div>
         )}
 
