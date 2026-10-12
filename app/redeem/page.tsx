@@ -358,7 +358,7 @@ function RedeemContent() {
             </div>
           </div>
 
-          {/* HEADER: Brand Name, Badges & Voucher Claimed By (Screenshot #1) */}
+          {/* HEADER: Brand Name, Badges & Voucher Claimed By */}
           <div className="space-y-3">
             <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-sans">
               {activeVoucher.brandKey === "netflix"
@@ -389,7 +389,7 @@ function RedeemContent() {
             </div>
           </div>
 
-          {/* ACCORDION 1: "Saya belum paham caranya login" (Screenshot #1, #2, #3) */}
+          {/* ACCORDION 1: "Saya belum paham caranya login" */}
           <div className="rounded-3xl border border-amber-300/80 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/20 overflow-hidden shadow-sm transition-all">
             <button
               type="button"
@@ -418,7 +418,7 @@ function RedeemContent() {
             {/* Isi Accordion Panduan */}
             {isLoginGuideOpen && (
               <div className="p-4 sm:p-6 pt-0 border-t border-amber-200/60 dark:border-amber-900/40 space-y-5 animate-fadeIn">
-                {/* JIKA BELUM PILIH PERANGKAT -> TAMPILKAN 3 DEVICE BUTTONS (Screenshot #2) */}
+                {/* JIKA BELUM PILIH PERANGKAT -> TAMPILKAN 3 DEVICE BUTTONS */}
                 {!selectedDevice ? (
                   <div className="text-center py-3 space-y-4">
                     <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
@@ -479,7 +479,7 @@ function RedeemContent() {
                     </div>
                   </div>
                 ) : (
-                  /* JIKA SUDAH PILIH PERANGKAT -> TAMPILKAN PANDUAN DAN LINK AKSES (Screenshot #3) */
+                  /* JIKA SUDAH PILIH PERANGKAT -> TAMPILKAN PANDUAN DAN LINK AKSES */
                   <div className="space-y-4 pt-2">
                     <div className="flex items-center gap-2 text-xs font-bold">
                       <button
@@ -572,7 +572,7 @@ function RedeemContent() {
             )}
           </div>
 
-          {/* GRID 4 KREDENSIAL UTAMA (Screenshot #1): Email, Password, Nama Profil, Masa Aktif */}
+          {/* GRID 4 KREDENSIAL UTAMA: Email, Password, Nama Profil, Masa Aktif */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* 1. Email / Username Card */}
             <div className="p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 shadow-sm flex items-center justify-between gap-3 hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
@@ -709,7 +709,7 @@ function RedeemContent() {
             </div>
           </div>
 
-          {/* ACCORDION 2: "Tombol Akses Login Instan" (Screenshot #1) */}
+          {/* ACCORDION 2: "Tombol Akses Login Instan" */}
           <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 overflow-hidden shadow-sm transition-all">
             <button
               type="button"
@@ -774,7 +774,7 @@ function RedeemContent() {
             )}
           </div>
 
-          {/* ACCORDION 3: "Email OTP Inbox" (Screenshot #1) */}
+          {/* ACCORDION 3: "Email OTP Inbox" */}
           <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 overflow-hidden shadow-sm transition-all">
             <button
               type="button"

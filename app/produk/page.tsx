@@ -69,10 +69,10 @@ export default function ProdukPage() {
       {/* 1. Shared Navbar */}
       <Navbar />
 
-      {/* 2. Main Dedicated Product Catalog matching Screenshot #2 */}
+      {/* 2. Main Dedicated Product Catalog */}
       <main className="flex-1 py-12 lg:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
-          {/* Header Section matching Screenshot #2 */}
+          {/* Header Section */}
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white font-sans">
               Semua{" "}
@@ -85,7 +85,7 @@ export default function ProdukPage() {
             </p>
           </div>
 
-          {/* Large Rounded Search Bar matching Screenshot #2 */}
+          {/* Large Rounded Search Bar */}
           <div className="max-w-2xl mx-auto">
             <div className="relative flex items-center rounded-full bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-black/40 p-1.5 transition-all focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/20">
               <SearchIcon className="w-5 h-5 text-slate-400 ml-4 shrink-0" />
@@ -126,7 +126,7 @@ export default function ProdukPage() {
             })}
           </div>
 
-          {/* Product Cards Grid matching Screenshot #2 Card Style */}
+          {/* Product Cards Grid */}
           {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map((product, index) => {
@@ -156,7 +156,7 @@ export default function ProdukPage() {
                         </span>
                       </div>
 
-                      {/* Brand Title matching Screenshot #2 (e.g. Netflix, CANVA, CAPCUT) */}
+                      {/* Brand Title (e.g. Netflix, CANVA, CAPCUT) */}
                       <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight font-sans">
                         {product.brandKey === "netflix"
                           ? "Netflix"
@@ -167,7 +167,7 @@ export default function ProdukPage() {
                           : "Spotify"}
                       </h2>
 
-                      {/* Subtitle matching Screenshot #2: ⚡ PREMIUM SERVICE */}
+                      {/* Subtitle: ⚡ PREMIUM SERVICE */}
                       <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-orange-500 mt-1 mb-4">
                         <ZapIcon className="w-3.5 h-3.5" />
                         <span>PREMIUM SERVICE</span>
